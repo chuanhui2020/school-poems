@@ -1,0 +1,58 @@
+[
+  {
+    "id": "pre-qin",
+    "name": "先秦",
+    "startYear": -1046,
+    "endYear": -221,
+    "color": "#8B4513"
+  },
+  {
+    "id": "han",
+    "name": "汉",
+    "startYear": -206,
+    "endYear": 220,
+    "color": "#CD853F"
+  },
+  {
+    "id": "wei-jin",
+    "name": "魏晋南北朝",
+    "startYear": 220,
+    "endYear": 589,
+    "color": "#6B8E23"
+  },
+  {
+    "id": "tang",
+    "name": "唐",
+    "startYear": 618,
+    "endYear": 907,
+    "color": "#B22222"
+  },
+  {
+    "id": "song",
+    "name": "宋",
+    "startYear": 960,
+    "endYear": 1279,
+    "color": "#4169E1"
+  },
+  {
+    "id": "yuan",
+    "name": "元",
+    "startYear": 1271,
+    "endYear": 1368,
+    "color": "#2E8B57"
+  },
+  {
+    "id": "ming",
+    "name": "明",
+    "startYear": 1368,
+    "endYear": 1644,
+    "color": "#DAA520"
+  },
+  {
+    "id": "qing",
+    "name": "清",
+    "startYear": 1644,
+    "endYear": 1912,
+    "color": "#8A2BE2"
+  }
+]

@@ -1,0 +1,203 @@
+{
+  "author_relationships": [
+    {
+      "source": "li-bai",
+      "target": "du-fu",
+      "type": "friendship",
+      "label": "诗友交往",
+      "description": "天宝三年（744年）李杜相逢于洛阳，同游梁宋，结下深厚友谊。杜甫多首诗怀念李白，如《梦李白》《天末怀李白》。",
+      "strength": 5
+    },
+    {
+      "source": "su-shi",
+      "target": "su-xun",
+      "type": "teacher_student",
+      "label": "父子",
+      "description": "苏洵为苏轼之父，「三苏」同列唐宋八大家。苏轼自幼受父亲文学熏陶。",
+      "strength": 4
+    },
+    {
+      "source": "su-shi",
+      "target": "xin-qiji",
+      "type": "literary_school",
+      "label": "豪放派",
+      "description": "苏辛并称，同为豪放派词人代表。辛弃疾继承发展了苏轼豪放词风。",
+      "strength": 4
+    },
+    {
+      "source": "su-shi",
+      "target": "huang-tingjian",
+      "type": "teacher_student",
+      "label": "苏门四学士",
+      "description": "黄庭坚为苏门四学士之一，与苏轼并称'苏黄'。",
+      "strength": 4
+    },
+    {
+      "source": "su-shi",
+      "target": "qin-guan",
+      "type": "teacher_student",
+      "label": "苏门四学士",
+      "description": "秦观为苏门四学士之一，深受苏轼赏识和提携。",
+      "strength": 3
+    },
+    {
+      "source": "li-qingzhao",
+      "target": "liu-yong",
+      "type": "literary_school",
+      "label": "婉约派",
+      "description": "同为婉约派代表词人，李清照词作受柳永影响，但更加含蓄深沉。",
+      "strength": 3
+    },
+    {
+      "source": "li-bai",
+      "target": "meng-haoran",
+      "type": "friendship",
+      "label": "诗友",
+      "description": "李白深敬孟浩然，有《赠孟浩然》'吾爱孟夫子，风流天下闻'。",
+      "strength": 4
+    },
+    {
+      "source": "wang-wei",
+      "target": "meng-haoran",
+      "type": "literary_school",
+      "label": "山水田园派",
+      "description": "王孟并称，同为盛唐山水田园诗派代表，诗风清新自然。",
+      "strength": 4
+    },
+    {
+      "source": "bai-juyi",
+      "target": "liu-yuxi",
+      "type": "friendship",
+      "label": "诗友唱和",
+      "description": "白居易与刘禹锡交往密切，并称'刘白'，有大量唱和诗作。《酬乐天扬州初逢席上见赠》即为二人唱和之作。",
+      "strength": 5
+    },
+    {
+      "source": "han-yu",
+      "target": "liu-zongyuan",
+      "type": "literary_school",
+      "label": "古文运动",
+      "description": "韩柳并称，共同倡导古文运动，为唐宋八大家之首。",
+      "strength": 5
+    },
+    {
+      "source": "du-mu",
+      "target": "li-shangyin",
+      "type": "literary_school",
+      "label": "小李杜",
+      "description": "杜牧与李商隐并称'小李杜'，同为晚唐诗歌代表。",
+      "strength": 4
+    },
+    {
+      "source": "xin-qiji",
+      "target": "lu-you",
+      "type": "literary_school",
+      "label": "爱国诗人",
+      "description": "辛弃疾与陆游同为南宋爱国诗人，都以收复中原为志。",
+      "strength": 3
+    },
+    {
+      "source": "cao-cao",
+      "target": "cao-zhi",
+      "type": "teacher_student",
+      "label": "父子",
+      "description": "曹植为曹操之子，建安文学代表，与其父、兄曹丕并称'三曹'。",
+      "strength": 4
+    },
+    {
+      "source": "tao-yuanming",
+      "target": "wang-wei",
+      "type": "influence",
+      "label": "田园诗影响",
+      "description": "陶渊明开创田园诗派，王维深受其影响，继承发展了田园山水诗。",
+      "strength": 3
+    },
+    {
+      "source": "qu-yuan",
+      "target": "li-bai",
+      "type": "influence",
+      "label": "浪漫主义传承",
+      "description": "屈原开创浪漫主义传统，李白继承其浪漫奔放的诗风，被称为'浪漫主义诗歌的高峰'。",
+      "strength": 3
+    },
+    {
+      "source": "du-fu",
+      "target": "bai-juyi",
+      "type": "influence",
+      "label": "现实主义传承",
+      "description": "杜甫的现实主义传统深刻影响了白居易，白居易倡导新乐府运动，继承杜甫关注民生的精神。",
+      "strength": 3
+    },
+    {
+      "source": "fan-zhongyan",
+      "target": "ouyang-xiu",
+      "type": "friendship",
+      "label": "政治改革同道",
+      "description": "范仲淹主持庆历新政，欧阳修积极支持，两人政见相近，文学交往密切。",
+      "strength": 4
+    },
+    {
+      "source": "ouyang-xiu",
+      "target": "su-shi",
+      "type": "teacher_student",
+      "label": "师生",
+      "description": "欧阳修为苏轼科举考官，慧眼识才，苏轼深受其文学影响。",
+      "strength": 4
+    },
+    {
+      "source": "ouyang-xiu",
+      "target": "wang-anshi",
+      "type": "friendship",
+      "label": "文学同道",
+      "description": "欧阳修与王安石同为唐宋八大家，欧阳修曾大力推荐王安石。",
+      "strength": 3
+    },
+    {
+      "source": "gao-shi",
+      "target": "cen-shen",
+      "type": "literary_school",
+      "label": "边塞诗派",
+      "description": "高适与岑参并称'高岑'，同为盛唐边塞诗派代表。",
+      "strength": 4
+    },
+    {
+      "source": "wen-tianxiang",
+      "target": "du-fu",
+      "type": "influence",
+      "label": "爱国精神传承",
+      "description": "文天祥深受杜甫忧国忧民精神影响，其诗承继杜甫沉郁顿挫之风。",
+      "strength": 2
+    },
+    {
+      "source": "li-bai",
+      "target": "wang-bo",
+      "type": "influence",
+      "label": "初唐四杰影响",
+      "description": "王勃为初唐四杰之首，其诗开盛唐之先声，李白等盛唐诗人受其影响。",
+      "strength": 2
+    },
+    {
+      "source": "su-shi",
+      "target": "li-qingzhao",
+      "type": "influence",
+      "label": "词风影响",
+      "description": "李清照虽以婉约著称，但其词论中对苏轼词有深入评价，苏轼拓宽词境对后世词人均有影响。",
+      "strength": 2
+    },
+    {
+      "source": "xin-qiji",
+      "target": "wen-tianxiang",
+      "type": "literary_school",
+      "label": "爱国词人",
+      "description": "辛弃疾与文天祥同为南宋爱国文人，文天祥深受辛弃疾词作鼓舞。",
+      "strength": 2
+    }
+  ],
+  "relationship_types": {
+    "friendship": { "label": "交往唱和", "color": "#FF6B6B", "dashArray": "none" },
+    "teacher_student": { "label": "师承", "color": "#4ECDC4", "dashArray": "none" },
+    "literary_school": { "label": "文学流派", "color": "#45B7D1", "dashArray": "5,5" },
+    "same_dynasty": { "label": "同朝代", "color": "#96CEB4", "dashArray": "2,4" },
+    "influence": { "label": "影响继承", "color": "#FFEAA7", "dashArray": "8,4" }
+  }
+}
