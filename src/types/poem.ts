@@ -61,20 +61,3 @@ export interface RelationshipsData {
   author_relationships: AuthorRelationship[];
   relationship_types: Record<RelationshipType, RelationshipTypeConfig>;
 }
-
-export interface ThemeCategory {
-  id: string;
-  name: string;
-  category: string;
-  keywords: string[];
-}
-
-export interface ImageryItem {
-  id: string;
-  name: string;
-}
-
-export interface ThemesData {
-  theme_taxonomy: ThemeCategory[];
-  imagery_taxonomy: ImageryItem[];
-}
