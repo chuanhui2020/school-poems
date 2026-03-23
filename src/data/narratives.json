@@ -1,0 +1,50 @@
+{
+  "pre-qin": {
+    "title": "先秦",
+    "subtitle": "诗歌的源头",
+    "narrative": "从「关关雎鸠」到「路漫漫其修远兮」，诗歌在礼乐文明中诞生，承载着先民最质朴的情感。",
+    "atmosphere": "ancient"
+  },
+  "han": {
+    "title": "两汉",
+    "subtitle": "乐府与古诗",
+    "narrative": "汉乐府采集民间歌谣，「感于哀乐，缘事而发」。五言诗在这里成熟，为后世奠基。",
+    "atmosphere": "solemn"
+  },
+  "wei-jin": {
+    "title": "魏晋南北朝",
+    "subtitle": "风骨与性灵",
+    "narrative": "乱世出诗人。建安风骨慷慨悲凉，陶渊明开田园之宗，谢灵运启山水之源。文学自觉的时代。",
+    "atmosphere": "ethereal"
+  },
+  "tang": {
+    "title": "唐",
+    "subtitle": "诗的黄金时代",
+    "narrative": "初唐四杰开路，盛唐李杜双峰并峙，中唐白居易倡新乐府，晚唐李商隐缠绵悱恻。一个朝代，写尽了诗的所有可能。",
+    "atmosphere": "golden"
+  },
+  "song": {
+    "title": "宋",
+    "subtitle": "词的天下",
+    "narrative": "词从花间走向豪放。苏轼「大江东去」，李清照「寻寻觅觅」，辛弃疾「醉里挑灯看剑」。宋人用词写尽了人间悲欢。",
+    "atmosphere": "refined"
+  },
+  "yuan": {
+    "title": "元",
+    "subtitle": "曲中乾坤",
+    "narrative": "散曲小令，嬉笑怒骂皆成文章。马致远一句「断肠人在天涯」，道尽漂泊之苦。",
+    "atmosphere": "dramatic"
+  },
+  "ming": {
+    "title": "明",
+    "subtitle": "复古与性灵",
+    "narrative": "前后七子倡复古，公安竟陵求性灵。在模仿与创新之间，明人寻找诗的出路。",
+    "atmosphere": "contemplative"
+  },
+  "qing": {
+    "title": "清",
+    "subtitle": "集大成",
+    "narrative": "纳兰容若以词惊世，龚自珍以诗言志。古典诗词的最后辉煌，在夕阳中绽放出璀璨的光芒。",
+    "atmosphere": "twilight"
+  }
+}
