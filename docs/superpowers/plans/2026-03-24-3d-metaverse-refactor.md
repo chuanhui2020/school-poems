@@ -692,7 +692,7 @@ export function AuthorStar3D({ node, zoomLevel, isSelected, isConnected, dimmed 
 
   return (
     <group position={[node.x, node.y, node.z]}>
-      <Detailed distances={[0, 100, 500]}>
+      <Detailed distances={[0, 30, 60]}>
         {/* Near: full detail */}
         <group>
           <mesh
@@ -1309,6 +1309,7 @@ import poems from './data/poems.json'
 import dynasties from './data/dynasties.json'
 import type { Author, Poem, Dynasty } from './types/poem'
 import { getDynastyColor } from './lib/colorScales'
+import { build3DTimeScale, layoutAuthors3D } from './lib/layout'
 
 class WebGLErrorBoundary extends Component<
   { children: ReactNode },
@@ -1332,10 +1333,16 @@ class WebGLErrorBoundary extends Component<
   }
 }
 
+// Pre-compute 3D node positions for search fly-to
+const timeScale = build3DTimeScale()
+const authorNodes3D = layoutAuthors3D(authors as Author[], poems as Poem[], timeScale)
+const nodePositionMap = new Map(authorNodes3D.map((n) => [n.id, [n.x, n.y, n.z] as [number, number, number]]))
+
 export default function App() {
   const selectedAuthorId = useStore((s) => s.selectedAuthorId)
   const selectAuthor = useStore((s) => s.selectAuthor)
   const selectPoem = useStore((s) => s.selectPoem)
+  const setFlyToTarget = useStore((s) => s.setFlyToTarget)
 
   const selectedAuthor = selectedAuthorId
     ? (authors as Author[]).find((a) => a.id === selectedAuthorId) ?? null
@@ -1356,7 +1363,11 @@ export default function App() {
       </WebGLErrorBoundary>
       <HUD />
       <SearchOverlay
-        onSelectAuthor={(id) => selectAuthor(id)}
+        onSelectAuthor={(id) => {
+          selectAuthor(id)
+          const pos = nodePositionMap.get(id)
+          if (pos) setFlyToTarget(pos)
+        }}
         onSelectPoem={(id) => selectPoem(id)}
       />
       <PoemReader />
