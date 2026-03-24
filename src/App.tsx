@@ -1,4 +1,6 @@
+import { useMemo, Component, ReactNode } from 'react'
 import { useStore } from './store/useStore'
+import { Universe3D } from './components/Universe3D'
 import { HUD } from './components/HUD'
 import { SearchOverlay } from './components/SearchOverlay'
 import { PoemReader } from './components/PoemReader'
@@ -8,11 +10,43 @@ import poems from './data/poems.json'
 import dynasties from './data/dynasties.json'
 import type { Author, Poem, Dynasty } from './types/poem'
 import { getDynastyColor } from './lib/colorScales'
+import { layoutAuthors3D, build3DTimeScale } from './lib/layout'
+
+const timeScale = build3DTimeScale()
+
+/** Fallback when WebGL is unavailable */
+function WebGLFallback() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <p style={{ color: '#e0d6c8', fontFamily: "'LXGW WenKai', serif", textAlign: 'center' }}>
+        您的浏览器不支持 WebGL，无法显示 3D 宇宙。
+        <br />
+        请尝试使用 Chrome 或 Firefox。
+      </p>
+    </div>
+  )
+}
+
+interface ErrorBoundaryState { hasError: boolean }
+class WebGLErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false }
+  static getDerivedStateFromError() { return { hasError: true } }
+  render() {
+    return this.state.hasError ? <WebGLFallback /> : this.props.children
+  }
+}
 
 export default function App() {
   const selectedAuthorId = useStore((s) => s.selectedAuthorId)
   const selectAuthor = useStore((s) => s.selectAuthor)
   const selectPoem = useStore((s) => s.selectPoem)
+  const setFlyToTarget = useStore((s) => s.setFlyToTarget)
+
+  // Build node position map for search fly-to
+  const nodePositionMap = useMemo(() => {
+    const nodes = layoutAuthors3D(authors as Author[], poems as Poem[], timeScale)
+    return new Map(nodes.map((n) => [n.id, [n.x, n.y, n.z] as [number, number, number]]))
+  }, [])
 
   const selectedAuthor = selectedAuthorId
     ? (authors as Author[]).find((a) => a.id === selectedAuthorId) ?? null
@@ -26,18 +60,30 @@ export default function App() {
   const getDynastyName = (dynastyId: string) =>
     (dynasties as Dynasty[]).find((d) => d.id === dynastyId)?.name ?? dynastyId
 
+  const handleSelectAuthor = (id: string) => {
+    selectAuthor(id)
+    const pos = nodePositionMap.get(id)
+    if (pos) setFlyToTarget([pos[0], pos[1], pos[2] + 20])
+  }
+
+  const handleSelectPoem = (id: string) => {
+    selectPoem(id)
+    const poem = (poems as Poem[]).find((p) => p.id === id)
+    if (poem) {
+      const pos = nodePositionMap.get(poem.authorId)
+      if (pos) setFlyToTarget([pos[0], pos[1], pos[2] + 20])
+    }
+  }
+
   return (
     <div className="w-screen h-screen relative overflow-hidden bg-[var(--color-bg-deep)]">
-      {/* Universe3D will go here */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <p style={{ color: '#e0d6c8', fontFamily: "'LXGW WenKai', serif" }}>
-          3D 重构中...
-        </p>
-      </div>
+      <WebGLErrorBoundary>
+        <Universe3D />
+      </WebGLErrorBoundary>
       <HUD />
       <SearchOverlay
-        onSelectAuthor={(id) => selectAuthor(id)}
-        onSelectPoem={(id) => selectPoem(id)}
+        onSelectAuthor={handleSelectAuthor}
+        onSelectPoem={handleSelectPoem}
       />
       <PoemReader />
       {selectedAuthor && (
