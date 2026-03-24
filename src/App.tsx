@@ -1,5 +1,4 @@
 import { useStore } from './store/useStore'
-import { Universe } from './components/Universe'
 import { HUD } from './components/HUD'
 import { SearchOverlay } from './components/SearchOverlay'
 import { PoemReader } from './components/PoemReader'
@@ -18,23 +17,23 @@ export default function App() {
   const selectedAuthor = selectedAuthorId
     ? (authors as Author[]).find((a) => a.id === selectedAuthorId) ?? null
     : null
-
   const authorPoems = selectedAuthorId
     ? (poems as Poem[]).filter((p) => p.authorId === selectedAuthorId)
     : []
-
   const dynastyColor = selectedAuthorId
-    ? getDynastyColor(
-        (authors as Author[]).find((a) => a.id === selectedAuthorId)?.dynastyId ?? ''
-      )
+    ? getDynastyColor((authors as Author[]).find((a) => a.id === selectedAuthorId)?.dynastyId ?? '')
     : '#888'
-
   const getDynastyName = (dynastyId: string) =>
     (dynasties as Dynasty[]).find((d) => d.id === dynastyId)?.name ?? dynastyId
 
   return (
     <div className="w-screen h-screen relative overflow-hidden bg-[var(--color-bg-deep)]">
-      <Universe />
+      {/* Universe3D will go here */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <p style={{ color: '#e0d6c8', fontFamily: "'LXGW WenKai', serif" }}>
+          3D 重构中...
+        </p>
+      </div>
       <HUD />
       <SearchOverlay
         onSelectAuthor={(id) => selectAuthor(id)}
