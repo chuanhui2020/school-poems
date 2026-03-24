@@ -1,5 +1,5 @@
 import { useRef, useMemo, useCallback } from 'react'
-import { useFrame, ThreeEvent } from '@react-three/fiber'
+import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { PoemNode, AuthorNode } from '../types/nodes'

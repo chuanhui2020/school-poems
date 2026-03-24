@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback } from 'react'
-import { useFrame, ThreeEvent } from '@react-three/fiber'
-import { Lod, Billboard, Text } from '@react-three/drei'
+import { useFrame, type ThreeEvent } from '@react-three/fiber'
+import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { AuthorNode } from '../types/nodes'
 import { useStore } from '../store/useStore'
@@ -50,68 +50,39 @@ export function AuthorStar3D({ node }: Props) {
 
   return (
     <group position={[node.x, node.y, node.z]}>
-      {/* LOD: detailed → medium → point */}
-      <Lod>
-        {/* Level 0: close — full sphere with emissive glow */}
-        <group>
-          <mesh
-            ref={meshRef}
-            onClick={handleClick}
-            onPointerOver={handlePointerOver}
-            onPointerOut={handlePointerOut}
-          >
-            <sphereGeometry args={[node.radius, 16, 16]} />
-            <meshStandardMaterial
-              color={color}
-              emissive={color}
-              emissiveIntensity={emissiveIntensity}
-              roughness={0.3}
-              metalness={0.6}
-            />
-          </mesh>
-          {/* Point light corona */}
-          <pointLight color={color} intensity={0.4} distance={node.radius * 8} decay={2} />
-          {/* Name label */}
-          <Billboard>
-            <Text
-              position={[0, node.radius + 2, 0]}
-              fontSize={2.5}
-              color={node.color}
-              anchorX="center"
-              anchorY="bottom"
-              font="/fonts/LXGWWenKai-Regular.ttf"
-              fillOpacity={0.9}
-            >
-              {node.label}
-            </Text>
-          </Billboard>
-        </group>
+      <mesh
+        ref={meshRef}
+        onClick={handleClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
+      >
+        <sphereGeometry args={[node.radius, 16, 16]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={emissiveIntensity}
+          roughness={0.3}
+          metalness={0.6}
+        />
+      </mesh>
 
-        {/* Level 1: medium — simpler sphere, no label */}
-        <mesh
-          onClick={handleClick}
-          onPointerOver={handlePointerOver}
-          onPointerOut={handlePointerOut}
-        >
-          <sphereGeometry args={[node.radius, 8, 8]} />
-          <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={emissiveIntensity * 0.6}
-            roughness={0.5}
-          />
-        </mesh>
+      {/* Point light corona */}
+      <pointLight color={color} intensity={0.4} distance={node.radius * 8} decay={2} />
 
-        {/* Level 2: far — single point sprite */}
-        <mesh
-          onClick={handleClick}
-          onPointerOver={handlePointerOver}
-          onPointerOut={handlePointerOut}
+      {/* Name label */}
+      <Billboard>
+        <Text
+          position={[0, node.radius + 2, 0]}
+          fontSize={2.5}
+          color={node.color}
+          anchorX="center"
+          anchorY="bottom"
+          font="/fonts/LXGWWenKai-Regular.ttf"
+          fillOpacity={0.9}
         >
-          <sphereGeometry args={[node.radius * 0.6, 4, 4]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-      </Lod>
+          {node.label}
+        </Text>
+      </Billboard>
     </group>
   )
 }

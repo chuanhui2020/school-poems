@@ -90,16 +90,6 @@ function Scene() {
 
   const selectedAuthorNode = selectedAuthorId ? nodeMap.get(selectedAuthorId) ?? null : null
 
-  // IDs connected to selected author
-  const connectedIds = useMemo(() => {
-    if (!selectedAuthorId) return new Set<string>()
-    return new Set(
-      edges
-        .filter((e) => e.source === selectedAuthorId || e.target === selectedAuthorId)
-        .flatMap((e) => [e.source, e.target])
-    )
-  }, [edges, selectedAuthorId])
-
   return (
     <>
       <ambientLight intensity={0.4} color="#e0d6c8" />

@@ -1,4 +1,4 @@
-import { useMemo, Component, ReactNode } from 'react'
+import { useMemo, Component, type ReactNode } from 'react'
 import { useStore } from './store/useStore'
 import { Universe3D } from './components/Universe3D'
 import { HUD } from './components/HUD'

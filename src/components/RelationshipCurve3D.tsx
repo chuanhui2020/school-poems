@@ -23,7 +23,6 @@ const TYPE_COLORS: Record<string, string> = {
 
 export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted, dimmed }: Props) {
   const progressRef = useRef(0)
-  const matRef = useRef<THREE.LineBasicMaterial>(null)
 
   const color = TYPE_COLORS[edge.type] ?? '#aaaaaa'
   const opacity = dimmed ? 0.05 : highlighted ? 0.95 : 0.3
