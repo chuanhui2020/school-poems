@@ -20,6 +20,10 @@ interface UniverseState {
   resetZoom: (() => void) | null
   setResetZoom: (fn: (() => void) | null) => void
 
+  // Camera fly-to target [x, y, z]
+  flyToTarget: [number, number, number] | null
+  setFlyToTarget: (target: [number, number, number] | null) => void
+
   // Search
   searchQuery: string
   setSearchQuery: (q: string) => void
@@ -45,6 +49,9 @@ export const useStore = create<UniverseState>((set) => ({
 
   resetZoom: null,
   setResetZoom: (fn) => set({ resetZoom: fn }),
+
+  flyToTarget: null,
+  setFlyToTarget: (target) => set({ flyToTarget: target }),
 
   searchQuery: '',
   setSearchQuery: (q) => set({ searchQuery: q }),

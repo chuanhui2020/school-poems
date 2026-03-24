@@ -13,6 +13,8 @@ export interface AuthorNode {
   x: number
   /** Y position (computed by layout algorithm) */
   y: number
+  /** Z position in 3D space (computed from style labels) */
+  z: number
   /** Number of poems in curriculum */
   poemCount: number
   /** Node radius, derived from poemCount */
