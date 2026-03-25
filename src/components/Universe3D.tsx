@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { EffectComposer, Bloom, ToneMapping, Vignette } from '@react-three/postprocessing'
 import { ToneMappingMode } from 'postprocessing'
+import * as THREE from 'three'
 import { useStore } from '../store/useStore'
 import { layoutAuthors3D, build3DTimeScale } from '../lib/layout'
 import type { AuthorNode, PoemNode, RelationshipEdge } from '../types/nodes'
@@ -157,7 +158,7 @@ export function Universe3D() {
   return (
     <Canvas
       camera={{ position: [0, 0, 300], fov: 60, near: 0.1, far: 5000 }}
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, toneMapping: THREE.NoToneMapping }}
       style={{ background: '#0a0a12' }}
     >
       <Scene />
