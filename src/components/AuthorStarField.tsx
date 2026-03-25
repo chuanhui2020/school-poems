@@ -1,5 +1,6 @@
 import { useRef, useMemo, useCallback, useEffect } from 'react'
 import { useFrame, type ThreeEvent } from '@react-three/fiber'
+import { createStarShaderMaterial } from '../shaders/starMaterial'
 import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { AuthorNode } from '../types/nodes'
@@ -24,6 +25,8 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
   const setHoveredNode = useStore((s) => s.setHoveredNode)
   const hoveredNodeId = useStore((s) => s.hoveredNodeId)
 
+  const starMaterial = useMemo(() => createStarShaderMaterial(), [])
+
   // Build index → node lookup
   const nodeIndex = useMemo(() => new Map(nodes.map((n, i) => [i, n])), [nodes])
   const idToIndex = useMemo(() => new Map(nodes.map((n, i) => [n.id, i])), [nodes])
@@ -47,7 +50,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
   }, [nodes])
 
   // Animate hovered/selected instance scale
-  useFrame(() => {
+  useFrame(({ clock }) => {
     const mesh = meshRef.current
     if (!mesh) return
 
@@ -73,6 +76,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
     }
 
     mesh.instanceMatrix.needsUpdate = true
+    starMaterial.uniforms.uTime.value = clock.getElapsedTime()
   })
 
   const handleClick = useCallback((e: ThreeEvent<MouseEvent>) => {
@@ -122,13 +126,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
         onPointerOut={handlePointerOut}
       >
         <sphereGeometry args={[1, 16, 16]} />
-        <meshStandardMaterial
-          emissive="#ffffff"
-          emissiveIntensity={0.3}
-          roughness={0.3}
-          metalness={0.6}
-          toneMapped={false}
-        />
+        <primitive object={starMaterial} attach="material" />
       </instancedMesh>
 
       {/* LOD labels */}
