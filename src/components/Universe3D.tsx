@@ -10,7 +10,7 @@ import dynastiesData from '../data/dynasties.json'
 import relationshipsData from '../data/relationships.json'
 import { StarfieldBackground } from './StarfieldBackground'
 import { CameraController } from './CameraController'
-import { DynastyNebula3D } from './DynastyNebula3D'
+import { DynastyNebulaField } from './DynastyNebulaField'
 import { AuthorStarField } from './AuthorStarField'
 import { PoemOrbit3D } from './PoemOrbit3D'
 import { RelationshipCurve3D } from './RelationshipCurve3D'
@@ -102,9 +102,7 @@ function Scene() {
       <TimelineRail3D dynasties={dynasties} />
 
       {/* Dynasty nebulae */}
-      {dynasties.map((dynasty) => (
-        <DynastyNebula3D key={dynasty.id} dynasty={dynasty} />
-      ))}
+      <DynastyNebulaField dynasties={dynasties} />
 
       {/* Relationship curves */}
       {edges.map((edge, i) => {
