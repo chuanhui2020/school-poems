@@ -23,6 +23,18 @@ export const WORLD3D = {
   PADDING: 20,
 } as const
 
+/** Spiral distribution tuning constants */
+export const SPIRAL = {
+  /** Spiral radius = sqrt(n) * RADIUS_FACTOR */
+  RADIUS_FACTOR: 12,
+  /** Y/Z spread = sqrt(n) * SPREAD_FACTOR */
+  SPREAD_FACTOR: 18,
+  /** Minimum spacing between any two star centers */
+  MIN_SPACING: 8,
+  /** X-axis deterministic offset scale to avoid birth_year overlap */
+  X_JITTER_SCALE: 3,
+} as const
+
 /**
  * Maps style labels to z-axis offsets in 3D space.
  * Separates poetic styles along the depth axis.
@@ -134,8 +146,8 @@ export function layoutAuthors(
 }
 
 /**
- * Position authors in 3D space.
- * X = birth year on timeline, Y = vertical spread within dynasty, Z = style depth.
+ * Position authors in 3D space using a golden-angle spiral per dynasty group.
+ * X = birth year on timeline + deterministic jitter, Y/Z = spiral distribution.
  */
 export function layoutAuthors3D(
   authors: Author[],
@@ -159,21 +171,30 @@ export function layoutAuthors3D(
   for (const [dynastyId, group] of byDynasty) {
     group.sort((a, b) => (a.birth_year ?? 0) - (b.birth_year ?? 0))
 
+    const n = group.length
+    const spiralRadius = Math.sqrt(n) * SPIRAL.RADIUS_FACTOR
+
     group.forEach((author, i) => {
       const count = poemCounts.get(author.id) ?? 0
       const radius = Math.max(1, Math.min(4, 1 + count * 0.4))
 
-      const spread = Math.min(80, group.length * 8)
-      const yOffset = group.length === 1
-        ? 0
-        : ((i / (group.length - 1)) - 0.5) * spread
+      // Golden-angle spiral, applied per-dynasty
+      const angle = i * Math.PI * (3 - Math.sqrt(5))
+      const t = n === 1 ? 0 : i / (n - 1)
+      const yOffset = Math.sin(angle) * spiralRadius * t
+      const zSpiral = Math.cos(angle) * spiralRadius * t * 0.6
 
-      // Pick z from first matching style label, default 0
+      // Pick styleZ from first matching style label, default 0
       const styleLabels = author.style_labels ?? []
-      const z = styleLabels.reduce<number>((acc, label) => {
+      const styleZ = styleLabels.reduce<number>((acc, label) => {
         if (acc !== 0) return acc
         return STYLE_Z_MAP[label] ?? 0
       }, 0)
+
+      const z = styleZ + zSpiral
+
+      // Deterministic X jitter to reduce birth_year overlap
+      const xJitter = ((i % 5) - 2) * SPIRAL.X_JITTER_SCALE
 
       nodes.push({
         id: author.id,
@@ -182,7 +203,7 @@ export function layoutAuthors3D(
         author,
         dynastyId,
         color: getDynastyColor(dynastyId),
-        x: timeScale(author.birth_year ?? 0),
+        x: timeScale(author.birth_year ?? 0) + xJitter,
         y: yOffset,
         z,
         poemCount: count,
