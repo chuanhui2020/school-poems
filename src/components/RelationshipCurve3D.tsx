@@ -27,16 +27,14 @@ export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted,
   const color = TYPE_COLORS[edge.type] ?? '#aaaaaa'
   const opacity = dimmed ? 0.05 : highlighted ? 0.95 : 0.3
 
-  const start = new THREE.Vector3(sourceNode.x, sourceNode.y, sourceNode.z)
-  const end = new THREE.Vector3(targetNode.x, targetNode.y, targetNode.z)
-
-  // Midpoint lifted in Y to create an arc
-  const mid = useMemo(() => {
-    const m = start.clone().lerp(end, 0.5)
-    m.y += Math.max(10, start.distanceTo(end) * 0.25)
+  const { start, end, mid } = useMemo(() => {
+    const s = new THREE.Vector3(sourceNode.x, sourceNode.y, sourceNode.z)
+    const e = new THREE.Vector3(targetNode.x, targetNode.y, targetNode.z)
+    const m = s.clone().lerp(e, 0.5)
+    m.y += Math.max(10, s.distanceTo(e) * 0.25)
     m.z += (sourceNode.z + targetNode.z) / 2
-    return m
-  }, [sourceNode, targetNode]) // eslint-disable-line react-hooks/exhaustive-deps
+    return { start: s, end: e, mid: m }
+  }, [sourceNode.x, sourceNode.y, sourceNode.z, targetNode.x, targetNode.y, targetNode.z])
 
   // Animate a flow pulse along the line
   useFrame((_, delta) => {
