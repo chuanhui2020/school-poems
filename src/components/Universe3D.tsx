@@ -103,11 +103,8 @@ function Scene() {
       <CameraController />
       <StarfieldBackground />
       <TimelineRail3D dynasties={dynasties} />
-
-      {/* Dynasty nebulae */}
       <DynastyNebulaField dynasties={dynasties} />
 
-      {/* Relationship curves */}
       {edges.map((edge, i) => {
         const src = nodeMap.get(edge.source)
         const tgt = nodeMap.get(edge.target)
@@ -128,10 +125,8 @@ function Scene() {
         )
       })}
 
-      {/* Author stars */}
       <AuthorStarField nodes={visibleAuthors} zoomLevel={zoomLevel} />
 
-      {/* Poem orbits — only for selected author */}
       {selectedAuthorNode && (
         <PoemOrbit3D
           poems={selectedAuthorPoems}

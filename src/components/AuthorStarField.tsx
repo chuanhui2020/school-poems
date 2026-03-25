@@ -137,7 +137,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
             color={node.color}
             anchorX="center"
             anchorY="bottom"
-            font="/fonts/LXGWWenKai-Subset.woff2"
+            font="/fonts/LXGWWenKai-Subset.ttf"
             fillOpacity={0.7}
           >
             {node.label}
@@ -153,7 +153,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
             color={hoveredNode.color}
             anchorX="center"
             anchorY="bottom"
-            font="/fonts/LXGWWenKai-Subset.woff2"
+            font="/fonts/LXGWWenKai-Subset.ttf"
             fillOpacity={0.9}
           >
             {hoveredNode.label}
@@ -169,7 +169,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
             color={selectedNode.color}
             anchorX="center"
             anchorY="bottom"
-            font="/fonts/LXGWWenKai-Subset.woff2"
+            font="/fonts/LXGWWenKai-Subset.ttf"
             fillOpacity={0.9}
           >
             {selectedNode.label}

@@ -77,7 +77,7 @@ export function DynastyNebulaField({ dynasties }: Props) {
             color={d.color}
             anchorX="center"
             anchorY="middle"
-            font="/fonts/LXGWWenKai-Subset.woff2"
+            font="/fonts/LXGWWenKai-Subset.ttf"
             fillOpacity={0.85}
           >
             {d.name}

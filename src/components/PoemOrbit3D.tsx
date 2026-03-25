@@ -83,7 +83,7 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
                   color="#fff8e0"
                   anchorX="center"
                   anchorY="bottom"
-                  font="/fonts/LXGWWenKai-Subset.woff2"
+                  font="/fonts/LXGWWenKai-Subset.ttf"
                   maxWidth={20}
                 >
                   {poemNode.poem.title}

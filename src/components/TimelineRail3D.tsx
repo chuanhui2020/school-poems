@@ -92,7 +92,7 @@ export function TimelineRail3D({ dynasties }: Props) {
                 color={dynasty.color}
                 anchorX="center"
                 anchorY="top"
-                font="/fonts/LXGWWenKai-Subset.woff2"
+                font="/fonts/LXGWWenKai-Subset.ttf"
                 fillOpacity={0.8}
               >
                 {dynasty.name}
