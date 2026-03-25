@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
+import { EffectComposer, Bloom, ToneMapping, Vignette } from '@react-three/postprocessing'
+import { ToneMappingMode } from 'postprocessing'
 import { useStore } from '../store/useStore'
 import { layoutAuthors3D, build3DTimeScale } from '../lib/layout'
 import type { AuthorNode, PoemNode, RelationshipEdge } from '../types/nodes'
@@ -136,6 +138,17 @@ function Scene() {
           visible={true}
         />
       )}
+
+      <EffectComposer>
+        <Bloom
+          intensity={1.2}
+          luminanceThreshold={0.6}
+          luminanceSmoothing={0.4}
+          mipmapBlur
+        />
+        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+        <Vignette eskil={false} offset={0.3} darkness={0.6} />
+      </EffectComposer>
     </>
   )
 }
