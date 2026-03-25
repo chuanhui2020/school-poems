@@ -67,7 +67,7 @@ export function DynastyNebula3D({ dynasty }: Props) {
           color={dynasty.color}
           anchorX="center"
           anchorY="middle"
-          font="/fonts/LXGWWenKai-Regular.ttf"
+          font="/fonts/LXGWWenKai-Subset.woff2"
           fillOpacity={0.85}
         >
           {dynasty.name}
