@@ -11,7 +11,7 @@ import relationshipsData from '../data/relationships.json'
 import { StarfieldBackground } from './StarfieldBackground'
 import { CameraController } from './CameraController'
 import { DynastyNebula3D } from './DynastyNebula3D'
-import { AuthorStar3D } from './AuthorStar3D'
+import { AuthorStarField } from './AuthorStarField'
 import { PoemOrbit3D } from './PoemOrbit3D'
 import { RelationshipCurve3D } from './RelationshipCurve3D'
 import { TimelineRail3D } from './TimelineRail3D'
@@ -69,6 +69,7 @@ function buildEdges(authorNodes: AuthorNode[]): RelationshipEdge[] {
 function Scene() {
   const selectedAuthorId = useStore((s) => s.selectedAuthorId)
   const selectedDynasties = useStore((s) => s.selectedDynasties)
+  const zoomLevel = useStore((s) => s.zoomLevel)
 
   const authorNodes = useMemo(() => layoutAuthors3D(authors, poems, timeScale), [])
   const poemNodes = useMemo(() => buildPoemNodes(authorNodes), [authorNodes])
@@ -127,9 +128,7 @@ function Scene() {
       })}
 
       {/* Author stars */}
-      {visibleAuthors.map((node) => (
-        <AuthorStar3D key={node.id} node={node} />
-      ))}
+      <AuthorStarField nodes={visibleAuthors} zoomLevel={zoomLevel} />
 
       {/* Poem orbits — only for selected author */}
       {selectedAuthorNode && (
