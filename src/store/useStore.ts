@@ -33,6 +33,10 @@ interface UniverseState {
   // Filters
   selectedDynasties: string[]
   toggleDynasty: (id: string) => void
+
+  // HoverCard
+  hoveredAuthorTimer: ReturnType<typeof setTimeout> | null
+  setHoveredAuthorTimer: (timer: ReturnType<typeof setTimeout> | null) => void
 }
 
 export const useStore = create<UniverseState>((set) => ({
@@ -65,4 +69,7 @@ export const useStore = create<UniverseState>((set) => ({
         ? s.selectedDynasties.filter((d) => d !== id)
         : [...s.selectedDynasties, id],
     })),
+
+  hoveredAuthorTimer: null,
+  setHoveredAuthorTimer: (timer) => set({ hoveredAuthorTimer: timer }),
 }))
