@@ -1,6 +1,6 @@
 import { useRef, useMemo, useCallback, useEffect } from 'react'
 import { useFrame, type ThreeEvent } from '@react-three/fiber'
-import { createCyberNodeMaterial } from '../shaders/cyberNodeShader'
+import { createInkStarMaterial } from '../shaders/inkStarShader'
 import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { AuthorNode } from '../types/nodes'
@@ -25,7 +25,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
   const setHoveredNode = useStore((s) => s.setHoveredNode)
   const hoveredNodeId = useStore((s) => s.hoveredNodeId)
 
-  const starMaterial = useMemo(() => createCyberNodeMaterial(), [])
+  const starMaterial = useMemo(() => createInkStarMaterial(), [])
 
   // Build index → node lookup
   const nodeIndex = useMemo(() => new Map(nodes.map((n, i) => [i, n])), [nodes])
@@ -143,7 +143,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
         onPointerMove={handlePointerMove}
         onPointerOut={handlePointerOut}
       >
-        <icosahedronGeometry args={[1, 1]} />
+        <sphereGeometry args={[1, 16, 16]} />
         <primitive object={starMaterial} attach="material" />
       </instancedMesh>
 
@@ -156,9 +156,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
             anchorX="center"
             anchorY="bottom"
             font="/fonts/LXGWWenKai-Subset.ttf"
-            fillOpacity={0.8}
-            outlineWidth={0.1}
-            outlineColor="#00f0ff"
+            fillOpacity={0.7}
           >
             {node.label}
           </Text>
@@ -174,9 +172,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
             anchorX="center"
             anchorY="bottom"
             font="/fonts/LXGWWenKai-Subset.ttf"
-            fillOpacity={0.95}
-            outlineWidth={0.1}
-            outlineColor="#00f0ff"
+            fillOpacity={0.9}
           >
             {hoveredNode.label}
           </Text>
@@ -192,9 +188,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
             anchorX="center"
             anchorY="bottom"
             font="/fonts/LXGWWenKai-Subset.ttf"
-            fillOpacity={0.95}
-            outlineWidth={0.1}
-            outlineColor="#00f0ff"
+            fillOpacity={0.9}
           >
             {selectedNode.label}
           </Text>

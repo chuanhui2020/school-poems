@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 import type { RelationshipEdge, AuthorNode } from '../types/nodes'
-import { cyberLineVertex, cyberLineFragment } from '../shaders/cyberLineShader'
+import { inkLineVertex, inkLineFragment } from '../shaders/inkLineShader'
 
 interface Props {
   edge: RelationshipEdge
@@ -12,11 +12,11 @@ interface Props {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  friendship: '#ffe600',
-  teacher_student: '#00f0ff',
-  literary_school: '#b400ff',
-  family: '#ff003c',
-  contemporary: '#5a6a8a',
+  friendship: '#f0c060',
+  teacher_student: '#80c8ff',
+  literary_school: '#c080ff',
+  family: '#ff9080',
+  contemporary: '#80ffb0',
 }
 
 const RIBBON_SEGMENTS = 32
@@ -76,8 +76,8 @@ function buildRibbonGeometry(
 }
 
 export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted, dimmed }: Props) {
-  const color = TYPE_COLORS[edge.type] ?? '#5a6a8a'
-  const opacity = dimmed ? 0.05 : highlighted ? 0.8 : 0.2
+  const color = TYPE_COLORS[edge.type] ?? '#aaaaaa'
+  const opacity = dimmed ? 0.05 : highlighted ? 0.6 : 0.15
 
   const { geometry, material } = useMemo(() => {
     const s = new THREE.Vector3(sourceNode.x, sourceNode.y, sourceNode.z)
@@ -88,8 +88,8 @@ export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted,
     const geometry = buildRibbonGeometry(s, m, e)
 
     const material = new THREE.ShaderMaterial({
-      vertexShader: cyberLineVertex,
-      fragmentShader: cyberLineFragment,
+      vertexShader: inkLineVertex,
+      fragmentShader: inkLineFragment,
       uniforms: {
         uTime: { value: 0 },
         uColor: { value: new THREE.Color(color) },

@@ -11,7 +11,7 @@ import authorsData from '../data/authors.json'
 import poemsData from '../data/poems.json'
 import dynastiesData from '../data/dynasties.json'
 import relationshipsData from '../data/relationships.json'
-import { CyberBackground } from './CyberBackground'
+import { InkBackground } from './InkBackground'
 import { CameraController } from './CameraController'
 import { DynastyNebulaField } from './DynastyNebulaField'
 import { AuthorStarField } from './AuthorStarField'
@@ -24,12 +24,12 @@ const poems = poemsData as Poem[]
 const dynasties = dynastiesData as Dynasty[]
 
 const EDGE_COLORS: Record<string, string> = {
-  friendship: '#ffe600',
-  teacher_student: '#00f0ff',
-  literary_school: '#b400ff',
-  family: '#ff003c',
-  influence: '#00f0ff',
-  contemporary: '#5a6a8a',
+  friendship: '#f0c060',
+  teacher_student: '#80c8ff',
+  literary_school: '#c080ff',
+  family: '#ff9080',
+  influence: '#80ffb0',
+  contemporary: '#aaaaaa',
 }
 
 const timeScale = build3DTimeScale()
@@ -63,7 +63,7 @@ function buildEdges(authorNodes: AuthorNode[]): RelationshipEdge[] {
     .filter((r) => nodeIds.has(r.source) && nodeIds.has(r.target))
     .map((r) => ({
       ...r,
-      color: EDGE_COLORS[r.type] ?? '#5a6a8a',
+      color: EDGE_COLORS[r.type] ?? '#aaaaaa',
       dashArray: r.type === 'contemporary' ? '4 2' : '',
     }))
 }
@@ -96,14 +96,12 @@ function Scene() {
 
   return (
     <>
-      {/* Colder lighting for cyberpunk feel */}
-      <ambientLight intensity={0.2} color="#8090c0" />
-      <directionalLight position={[200, 300, 200]} intensity={0.4} color="#a0b0e0" />
-      <pointLight position={[-300, -100, -200]} intensity={0.3} color="#00f0ff" />
-      <pointLight position={[300, 100, 200]} intensity={0.15} color="#b400ff" />
+      <ambientLight intensity={0.3} color="#e0dcd0" />
+      <directionalLight position={[200, 300, 200]} intensity={0.5} color="#e0dcd0" />
+      <pointLight position={[-300, -100, -200]} intensity={0.2} color="#4a4a6a" />
 
       <CameraController />
-      <CyberBackground />
+      <InkBackground />
       <TimelineRail3D dynasties={dynasties} />
       <DynastyNebulaField dynasties={dynasties} />
 
@@ -139,13 +137,13 @@ function Scene() {
 
       <EffectComposer>
         <Bloom
-          intensity={1.4}
-          luminanceThreshold={0.5}
-          luminanceSmoothing={0.4}
+          intensity={0.8}
+          luminanceThreshold={0.7}
+          luminanceSmoothing={0.3}
           mipmapBlur
         />
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-        <Vignette eskil={false} offset={0.2} darkness={0.8} />
+        <Vignette eskil={false} offset={0.25} darkness={0.75} />
       </EffectComposer>
     </>
   )
@@ -156,7 +154,7 @@ export function Universe3D() {
     <Canvas
       camera={{ position: [0, 0, 300], fov: 60, near: 0.1, far: 5000 }}
       gl={{ antialias: true, alpha: false, toneMapping: THREE.NoToneMapping }}
-      style={{ background: '#050510' }}
+      style={{ background: '#0a0a0f' }}
     >
       <Scene />
     </Canvas>
