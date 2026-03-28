@@ -4,7 +4,7 @@ import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { Dynasty } from '../types/poem'
 import { build3DTimeScale } from '../lib/layout'
-import { inkNebulaVertex, inkNebulaFragment } from '../shaders/inkNebulaShader'
+import { cyberNebulaVertex, cyberNebulaFragment } from '../shaders/cyberNebulaShader'
 
 interface Props {
   dynasties: Dynasty[]
@@ -33,12 +33,12 @@ function DynastyNebula({ dynasty }: { dynasty: Dynasty }) {
           <planeGeometry args={[size, size * 0.8]} />
           <shaderMaterial
             ref={materialRef}
-            vertexShader={inkNebulaVertex}
-            fragmentShader={inkNebulaFragment}
+            vertexShader={cyberNebulaVertex}
+            fragmentShader={cyberNebulaFragment}
             uniforms={{
               uTime: { value: 0 },
               uColor: { value: color },
-              uSaturation: { value: 0.7 },
+              uSaturation: { value: 0.9 },
             }}
             transparent
             depthWrite={false}
@@ -54,7 +54,9 @@ function DynastyNebula({ dynasty }: { dynasty: Dynasty }) {
           anchorX="center"
           anchorY="middle"
           font="/fonts/LXGWWenKai-Subset.ttf"
-          fillOpacity={0.85}
+          fillOpacity={0.95}
+          outlineWidth={0.3}
+          outlineColor="#00f0ff"
         >
           {dynasty.name}
         </Text>

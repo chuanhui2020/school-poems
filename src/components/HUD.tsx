@@ -17,29 +17,40 @@ export function HUD() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-30 pointer-events-none">
+      {/* Scanline overlay */}
+      <div className="scanline absolute inset-0 pointer-events-none" />
+
       <div className="flex items-center justify-between px-6 py-4">
         {/* Left: title + breadcrumb */}
         <div className="flex items-center gap-4 pointer-events-auto">
-          <h1
-            className="text-xl cursor-pointer"
-            style={{
-              color: 'var(--color-text)',
-              fontFamily: "'LXGW WenKai', serif",
-              fontWeight: 300,
-              letterSpacing: '0.1em',
-            }}
-            onClick={handleReset}
-          >
-            古诗词网络
-          </h1>
+          {/* Corner bracket decoration */}
+          <div className="corner-brackets px-2 py-1">
+            <h1
+              className="glitch text-xl cursor-pointer"
+              data-text="古诗词网络"
+              style={{
+                color: 'var(--color-neon-cyan)',
+                fontFamily: "'LXGW WenKai', serif",
+                fontWeight: 300,
+                letterSpacing: '0.1em',
+                textShadow: '0 0 10px rgba(0,240,255,0.5)',
+              }}
+              onClick={handleReset}
+            >
+              古诗词网络
+            </h1>
+          </div>
           <div
             className="flex items-center gap-2 text-xs"
             style={{ color: 'var(--color-text-dim)' }}
           >
-            <span>{zoomLevel === 'galaxy' ? '全景' : zoomLevel === 'dynasty' ? '朝代' : '诗人'}</span>
+            <span style={{ color: 'var(--color-neon-cyan)', opacity: 0.7 }}>
+              {zoomLevel === 'galaxy' ? '全景' : zoomLevel === 'dynasty' ? '朝代' : '诗人'}
+            </span>
             {selectedAuthorName && (
               <span
                 className="cursor-pointer hover:opacity-80"
+                style={{ color: 'var(--color-neon-yellow)' }}
                 onClick={() => selectAuthor(null)}
               >
                 › {selectedAuthorName}
@@ -48,18 +59,17 @@ export function HUD() {
           </div>
         </div>
 
-        {/* Right: stamp-style buttons */}
+        {/* Right: cyber buttons */}
         <div className="flex items-center gap-3 pointer-events-auto">
           <button
             onClick={toggleSearch}
-            className="ink-stamp text-sm"
+            className="cyber-btn text-sm"
           >
             搜索
           </button>
           <button
             onClick={handleReset}
-            className="ink-stamp text-sm"
-            style={{ transform: 'rotate(1deg)' }}
+            className="cyber-btn text-sm"
           >
             全景
           </button>
@@ -70,7 +80,7 @@ export function HUD() {
       <div
         className="absolute inset-x-0 top-0 h-20 pointer-events-none -z-10"
         style={{
-          background: 'linear-gradient(to bottom, rgba(10,10,15,0.6), transparent)',
+          background: 'linear-gradient(to bottom, rgba(5,5,16,0.7), transparent)',
         }}
       />
     </div>

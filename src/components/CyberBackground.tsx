@@ -1,9 +1,9 @@
 import { useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { inkMountainVertex, inkMountainFragment } from '../shaders/inkMountainShader'
+import { cyberGridVertex, cyberGridFragment } from '../shaders/cyberGridShader'
 
-export function InkBackground() {
+export function CyberBackground() {
   const materialRef = useRef<THREE.ShaderMaterial>(null)
   const { size } = useThree()
 
@@ -19,8 +19,8 @@ export function InkBackground() {
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={materialRef}
-        vertexShader={inkMountainVertex}
-        fragmentShader={inkMountainFragment}
+        vertexShader={cyberGridVertex}
+        fragmentShader={cyberGridFragment}
         uniforms={{
           uTime: { value: 0 },
           uResolution: { value: new THREE.Vector2(size.width, size.height) },

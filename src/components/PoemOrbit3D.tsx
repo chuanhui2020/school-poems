@@ -24,10 +24,10 @@ function fibonacciSphere(index: number, total: number, radius: number): THREE.Ve
   )
 }
 
-// Ink dot colors
-const INK_COLOR = '#1a1a2e'
-const INK_EMISSIVE = '#2d2d44'
-const CINNABAR = '#c43e1c'
+// Cyberpunk neon colors
+const NEON_CYAN = '#00f0ff'
+const NEON_RED = '#ff003c'
+const NEON_PURPLE = '#b400ff'
 
 export function PoemOrbit3D({ poems, author, visible }: Props) {
   const groupRef = useRef<THREE.Group>(null)
@@ -65,8 +65,7 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
         const pos = positions[i]
         const isSelected = selectedPoemId === poemNode.id
         const isHovered = hoveredPoemId === poemNode.id
-        const dotColor = isSelected ? CINNABAR : INK_COLOR
-        const emissive = isSelected ? CINNABAR : INK_EMISSIVE
+        const glowColor = isSelected ? NEON_RED : isHovered ? NEON_CYAN : NEON_PURPLE
 
         return (
           <group key={poemNode.id} position={pos}>
@@ -75,15 +74,17 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
               onPointerEnter={() => setHoveredPoemId(poemNode.id)}
               onPointerLeave={() => setHoveredPoemId(null)}
               scale={isSelected ? 1.7 : isHovered ? 1.4 : 1.0}
+              rotation={[Math.PI / 4, 0, Math.PI / 4]}
             >
-              <sphereGeometry args={[0.6, 8, 8]} />
+              <octahedronGeometry args={[0.6, 0]} />
               <meshStandardMaterial
-                color={dotColor}
-                emissive={emissive}
-                emissiveIntensity={isSelected ? 0.8 : isHovered ? 0.5 : 0.2}
-                roughness={0.8}
+                color="#101025"
+                emissive={glowColor}
+                emissiveIntensity={isSelected ? 1.2 : isHovered ? 0.8 : 0.4}
+                roughness={0.3}
+                metalness={0.8}
                 transparent
-                opacity={0.9}
+                opacity={0.95}
               />
             </mesh>
 
@@ -92,11 +93,13 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
                 <Text
                   position={[0, 2, 0]}
                   fontSize={1.8}
-                  color="#e0dcd0"
+                  color="#e0e8ff"
                   anchorX="center"
                   anchorY="bottom"
                   font="/fonts/LXGWWenKai-Subset.ttf"
                   maxWidth={20}
+                  outlineWidth={0.08}
+                  outlineColor="#00f0ff"
                 >
                   {poemNode.poem.title}
                 </Text>

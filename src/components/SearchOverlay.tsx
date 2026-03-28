@@ -25,16 +25,16 @@ export function SearchOverlay({ onSelectAuthor, onSelectPoem }: Props) {
       onClick={toggleSearch}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0" style={{ background: 'rgba(10,10,15,0.5)' }} />
+      <div className="absolute inset-0" style={{ background: 'rgba(5,5,16,0.6)' }} />
 
       {/* Right slide-in panel */}
       <div
-        className="absolute top-0 right-0 h-full w-[360px] max-w-[85vw] animate-slide-in"
+        className="absolute top-0 right-0 h-full w-[360px] max-w-[85vw] animate-slide-in neon-border"
         style={{
-          background: 'rgba(10, 10, 15, 0.95)',
+          background: 'rgba(5, 5, 20, 0.95)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          borderLeft: '1px solid rgba(224, 220, 208, 0.06)',
+          borderLeft: '1px solid rgba(0, 240, 255, 0.2)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -48,10 +48,11 @@ export function SearchOverlay({ onSelectAuthor, onSelectPoem }: Props) {
             placeholder="搜索诗人或诗词..."
             className="w-full bg-transparent outline-none pb-2"
             style={{
-              color: '#e0dcd0',
+              color: '#e0e8ff',
               fontSize: '16px',
               fontFamily: "'LXGW WenKai', serif",
-              borderBottom: '1px solid rgba(224, 220, 208, 0.15)',
+              borderBottom: '2px solid rgba(0, 240, 255, 0.4)',
+              caretColor: '#00f0ff',
             }}
           />
         </div>
@@ -62,7 +63,16 @@ export function SearchOverlay({ onSelectAuthor, onSelectPoem }: Props) {
             {results.map((r) => (
               <li
                 key={`${r.type}-${r.id}`}
-                className="ink-dot px-4 py-3 cursor-pointer rounded-lg hover:bg-white/5"
+                className="px-4 py-3 cursor-pointer rounded-lg transition-colors"
+                style={{ borderLeft: '2px solid transparent' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 240, 255, 0.08)'
+                  e.currentTarget.style.borderLeftColor = '#00f0ff'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.borderLeftColor = 'transparent'
+                }}
                 onClick={() => {
                   if (r.type === 'author') onSelectAuthor(r.id)
                   else onSelectPoem(r.id)
@@ -70,8 +80,8 @@ export function SearchOverlay({ onSelectAuthor, onSelectPoem }: Props) {
                   setSearchQuery('')
                 }}
               >
-                <span style={{ color: '#e0dcd0', fontSize: '14px' }}>{r.title}</span>
-                <span className="ml-2" style={{ color: '#6a6a7a', fontSize: '12px' }}>
+                <span style={{ color: '#e0e8ff', fontSize: '14px' }}>{r.title}</span>
+                <span className="ml-2" style={{ color: '#5a6a8a', fontSize: '12px' }}>
                   {r.type === 'author' ? '诗人' : '诗词'} · {r.subtitle}
                 </span>
               </li>
