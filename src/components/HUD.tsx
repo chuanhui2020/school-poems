@@ -11,59 +11,62 @@ export function HUD() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-30 pointer-events-none">
-      <div className="flex items-center justify-between px-6 py-4">
-        {/* Left: title + breadcrumb */}
-        <div className="pointer-events-auto">
+      <div className="flex items-start justify-between px-6 py-4">
+        {/* Left: vertical title + breadcrumb */}
+        <div className="flex items-start gap-4 pointer-events-auto">
           <h1
-            className="text-lg cursor-pointer"
-            style={{ color: '#e0d6c8', fontFamily: "'LXGW WenKai', serif" }}
+            className="text-lg cursor-pointer leading-tight"
+            style={{
+              color: '#e0dcd0',
+              fontFamily: "'LXGW WenKai', serif",
+              writingMode: 'vertical-rl',
+              letterSpacing: '0.15em',
+            }}
             onClick={handleReset}
           >
-            诗词元宇宙
+            古诗词网络
           </h1>
-          <div className="flex items-center gap-2 text-xs" style={{ color: '#e0d6c8', opacity: 0.4 }}>
+          <div
+            className="flex flex-col gap-1 text-xs mt-1"
+            style={{ color: '#e0dcd0', opacity: 0.4 }}
+          >
             <span>{zoomLevel === 'galaxy' ? '全景' : zoomLevel === 'dynasty' ? '朝代' : '诗人'}</span>
             {selectedAuthorId && (
-              <>
-                <span>›</span>
-                <span
-                  className="cursor-pointer hover:opacity-80"
-                  onClick={() => selectAuthor(null)}
-                >
-                  {selectedAuthorId}
-                </span>
-              </>
+              <span
+                className="cursor-pointer hover:opacity-80"
+                onClick={() => selectAuthor(null)}
+              >
+                › {selectedAuthorId}
+              </span>
             )}
           </div>
         </div>
 
-        {/* Right: search + zoom controls */}
+        {/* Right: stamp-style buttons */}
         <div className="flex items-center gap-3 pointer-events-auto">
           <button
             onClick={toggleSearch}
-            className="px-4 py-2 rounded-lg text-sm"
-            style={{
-              background: 'rgba(224,214,200,0.08)',
-              color: '#e0d6c8',
-              border: '1px solid rgba(224,214,200,0.1)',
-              fontFamily: "'LXGW WenKai', serif",
-            }}
+            className="ink-stamp text-sm"
+            style={{ fontFamily: "'LXGW WenKai', serif" }}
           >
             搜索
           </button>
           <button
             onClick={handleReset}
-            className="px-3 py-2 rounded-lg text-sm"
-            style={{
-              background: 'rgba(224,214,200,0.08)',
-              color: '#e0d6c8',
-              border: '1px solid rgba(224,214,200,0.1)',
-            }}
+            className="ink-stamp text-sm"
           >
             全景
           </button>
         </div>
       </div>
+
+      {/* Top gradient fade */}
+      <div
+        className="absolute inset-x-0 top-0 h-20 pointer-events-none -z-10"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(10,10,15,0.6), transparent)',
+        }}
+      />
     </div>
   )
 }
