@@ -21,39 +21,46 @@ export function SearchOverlay({ onSelectAuthor, onSelectPoem }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-start justify-center pt-20"
-      style={{ backgroundColor: 'rgba(10,10,20,0.8)' }}
+      className="fixed inset-0 z-40"
       onClick={toggleSearch}
     >
+      {/* Backdrop */}
+      <div className="absolute inset-0" style={{ background: 'rgba(10,10,15,0.5)' }} />
+
+      {/* Right slide-in panel */}
       <div
-        className="w-full max-w-lg mx-4 rounded-xl overflow-hidden"
+        className="absolute top-0 right-0 h-full w-[360px] max-w-[85vw] animate-slide-in"
         style={{
-          background: 'rgba(30,30,50,0.95)',
-          border: '1px solid rgba(224,214,200,0.1)',
-          backdropFilter: 'blur(16px)',
+          background: 'rgba(10, 10, 15, 0.95)',
+          borderLeft: '1px solid rgba(224, 220, 208, 0.06)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <input
-          autoFocus
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="搜索诗人或诗词..."
-          className="w-full px-6 py-4 bg-transparent outline-none"
-          style={{
-            color: '#e0d6c8',
-            fontSize: '16px',
-            fontFamily: "'LXGW WenKai', serif",
-            borderBottom: '1px solid rgba(224,214,200,0.08)',
-          }}
-        />
+        {/* Search input */}
+        <div className="p-6">
+          <input
+            autoFocus
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索诗人或诗词..."
+            className="w-full bg-transparent outline-none pb-2"
+            style={{
+              color: '#e0dcd0',
+              fontSize: '16px',
+              fontFamily: "'LXGW WenKai', serif",
+              borderBottom: '1px solid rgba(224, 220, 208, 0.15)',
+            }}
+          />
+        </div>
+
+        {/* Results */}
         {results.length > 0 && (
-          <ul className="max-h-80 overflow-y-auto">
+          <ul className="max-h-[calc(100vh-100px)] overflow-y-auto px-2">
             {results.map((r) => (
               <li
                 key={`${r.type}-${r.id}`}
-                className="px-6 py-3 hover:bg-white/5 cursor-pointer"
+                className="ink-dot px-4 py-3 cursor-pointer rounded-lg hover:bg-white/5"
                 onClick={() => {
                   if (r.type === 'author') onSelectAuthor(r.id)
                   else onSelectPoem(r.id)
@@ -61,8 +68,8 @@ export function SearchOverlay({ onSelectAuthor, onSelectPoem }: Props) {
                   setSearchQuery('')
                 }}
               >
-                <span style={{ color: '#e0d6c8', fontSize: '14px' }}>{r.title}</span>
-                <span className="ml-2" style={{ color: '#e0d6c8', opacity: 0.4, fontSize: '12px' }}>
+                <span style={{ color: '#e0dcd0', fontSize: '14px' }}>{r.title}</span>
+                <span className="ml-2" style={{ color: '#6a6a7a', fontSize: '12px' }}>
                   {r.type === 'author' ? '诗人' : '诗词'} · {r.subtitle}
                 </span>
               </li>
