@@ -67,16 +67,16 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
         const isHovered = hoveredPoemId === poemNode.id
         const dotColor = isSelected ? CINNABAR : INK_COLOR
         const emissive = isSelected ? CINNABAR : INK_EMISSIVE
-        const sphereRadius = isSelected ? 1.0 : isHovered ? 0.85 : 0.6
 
         return (
           <group key={poemNode.id} position={pos}>
             <mesh
               onClick={handleClick(poemNode.id)}
-              onPointerEnter={(e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); setHoveredPoemId(poemNode.id) }}
+              onPointerEnter={() => setHoveredPoemId(poemNode.id)}
               onPointerLeave={() => setHoveredPoemId(null)}
+              scale={isSelected ? 1.7 : isHovered ? 1.4 : 1.0}
             >
-              <sphereGeometry args={[sphereRadius, 8, 8]} />
+              <sphereGeometry args={[0.6, 8, 8]} />
               <meshStandardMaterial
                 color={dotColor}
                 emissive={emissive}

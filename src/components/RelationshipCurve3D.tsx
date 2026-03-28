@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 import type { RelationshipEdge, AuthorNode } from '../types/nodes'
 import { inkLineVertex, inkLineFragment } from '../shaders/inkLineShader'
@@ -46,6 +46,9 @@ function buildRibbonGeometry(
     const p = points[i]
     const tangent = tangents[i]
     const normal = new THREE.Vector3().crossVectors(tangent, up).normalize()
+    if (normal.lengthSq() < 0.001) {
+      normal.crossVectors(tangent, new THREE.Vector3(1, 0, 0)).normalize()
+    }
 
     const widthScale = Math.sin(t * Math.PI)
     const hw = RIBBON_HALF_WIDTH * (0.3 + 0.7 * widthScale)
@@ -100,6 +103,13 @@ export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted,
 
     return { geometry, material }
   }, [sourceNode.x, sourceNode.y, sourceNode.z, targetNode.x, targetNode.y, targetNode.z, color])
+
+  useEffect(() => {
+    return () => {
+      geometry.dispose()
+      material.dispose()
+    }
+  }, [geometry, material])
 
   // Update opacity directly — ref-like mutation, no re-render needed
   material.uniforms.uOpacity.value = opacity
