@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(cmd.exe /c \"cd /d D:\\\\projects\\\\school-poems && node_modules\\\\.bin\\\\tsc --noEmit\" 2>&1)",
+      "Bash(cmd.exe /c \"cd /d D:\\\\projects\\\\school-poems && git add src/index.css && git commit -m \\\\\"style: replace space theme with cyber ink-wash color system\\\\\"\" 2>&1)",
+      "Bash(cmd.exe /c \"cd /d D:\\\\projects\\\\school-poems && git log --oneline -3\" 2>&1)",
+      "Bash(cmd.exe /c \"cd /d D:\\\\projects\\\\school-poems && git status && git log --oneline -3\")",
+      "Bash(node_modules/.bin/tsc.cmd --noEmit)",
+      "Bash(./node_modules/typescript/bin/tsc --noEmit)",
+      "Bash(node -e \"require\\(''child_process''\\).execSync\\(''node node_modules/typescript/lib/tsc.js --noEmit'', {stdio:''inherit''}\\)\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\projects\\\\school-poems && node_modules\\\\.bin\\\\tsc --noEmit 2>&1\")"
+    ]
+  }
+}

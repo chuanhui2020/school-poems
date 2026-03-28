@@ -1,264 +1,256 @@
-# 赛博水墨重塑 — Cyber Ink Redesign
+# 赛博水墨重设计 — 设计规格
 
-## 概述
-
-将诗词元宇宙的视觉风格从当前的星空宇宙主题重塑为「赛博水墨」风格：深色背景 + 水墨粒子扩散效果 + 霓虹描边，像水墨画遇上赛博朋克。同时统一升级所有 UI 组件风格，并完善触屏手势交互。
-
-**目标设备**：桌面优先，手机能用。
+> 将古诗词网络从宇宙/太空主题转变为赛博水墨（Cyber Ink-wash）风格，所有视觉效果全部程序化 GLSL 生成，不依赖外部纹理贴图。
 
 ---
 
-## 1. 3D 视觉效果
+## 1. 色彩系统
 
-### 1.1 背景层
+| 角色 | 色值 | 说明 |
+|------|------|------|
+| 背景底色 | `#0a0a0f` | 近黑，微冷调 |
+| 墨色远山 | `#1a1a2e` | 最远层 |
+| 墨色中山 | `#2d2d44` | 中间层 |
+| 墨色近山 | `#4a4a6a` | 最近层 |
+| 赛博青 | `#00e5ff` | 主强调色，科技感光晕 |
+| 朱砂红 | `#ff6b35` | 辅助强调，印章、选中态 |
+| 宣纸白 | `#e0dcd0` | 文字色，微暖 |
+| 朝代色 | 沿用 `colorScales.ts` | 饱和度降低 30%，融入水墨氛围 |
 
-**水墨山水远景**
-- 自定义 shader 生成 3-4 层半透明山形剪影（从深到浅）
-- 各层以不同速度缓慢视差滚动，营造纵深感
-- 山形轮廓用 Perlin noise 生成，边缘柔和不规则
-
-**流动墨点粒子**
-- 替换现有 2000 颗静态星星
-- 粒子大小不一（0.5-3.0），有拖尾效果
-- 沿曲线路径飘动，模拟墨汁在水中扩散
-- 颜色：深灰到浅灰，少量带朝代色调
-
-**底色**
-- 从纯深黑 `#0a0a12` 改为带微蓝的墨色渐变
-- 中心略亮（`#0d1020`），边缘深沉（`#050510`）
-
-### 1.2 朝代星云
-
-- 从圆形粒子点改为水墨晕染团
-- 每个朝代渲染为一个 billboard quad，使用 `inkNebulaShader` 程序化生成水墨晕染效果
-- 用 3D noise 纹理控制边缘形状，不规则、有渗透感
-- 颜色保留各朝代色，降低饱和度 30%，叠加半透明水墨灰层
-- 缓慢呼吸动画（边缘微微扩散收缩）
-
-### 1.3 作者节点
-
-**内核**
-- 从纯球体改为水墨笔触形状
-- 深色墨点，用 noise 控制边缘使其不规则
-- 大小保留现有 radius 计算逻辑（由上游 layout 层决定）
-
-**霓虹光晕**
-- 外圈：朝代色的发光描边
-- 脉冲呼吸动画（cyan/金色交替）
-- 光晕强度随缩放级别变化（远处弱，近处强）
-
-**交互状态**
-- Normal：微弱光晕
-- Hover：光晕扩大 1.3x + 墨点边缘扩散动画
-- Selected：强烈霓虹光晕 + 涟漪扩散效果
-
-### 1.4 关系线
-
-- 从平滑贝塞尔曲线改为飞白笔触效果
-- 使用自定义 ribbon/tube 几何体（非 Line2），支持 per-fragment 线宽调制
-- 线条粗细不均匀，有断续感（用 noise 调制线宽）
-- 激活时：霓虹色流光沿线条流动
-- 未激活时：淡墨色，opacity 0.15
-
-### 1.5 诗词轨道
-
-- 保留斐波那契球分布
-- 诗词节点从球体改为小墨点（不规则圆形）
-- 选中的诗词发出柔和光晕
-- 轨道整体旋转保留
-
-### 1.6 后处理
-
-- Bloom：降低 luminanceThreshold 到 0.4（让霓虹更明显）
-- 新增 Chromatic Aberration：微弱色散（offset 0.001），增加赛博感
-- Vignette：加强（darkness 0.75），模拟卷轴边缘
-- ToneMapping：保留 ACES Filmic
+CSS 变量定义在 `src/index.css`，替换现有深空色板。
 
 ---
 
-## 2. UI 组件设计
+## 2. 水墨山水背景（InkBackground）
 
-### 2.1 风格语言
+替代 `StarfieldBackground.tsx` 的 2000 颗星点。
 
-| 元素 | 规范 |
+**实现方式：** 全屏四边形（fullscreen quad）+ 单个 fragment shader。
+
+**视觉层次：**
+- 3-4 层远山剪影，FBM（分形布朗运动）噪声生成山脊轮廓
+- 每层不同墨色浓度：远淡近浓，z-depth 分离产生视差
+- 山体边缘墨晕扩散：基于距离场的 smoothstep 渐变
+- 底部雾气：低频噪声 + 时间驱动缓慢流动
+- 顶部留白：模拟宣纸天空空旷感，仅有稀疏墨点作远景点缀
+- 整体亮度极低，确保前景 3D 元素突出
+
+**Shader 文件：**
+- `src/shaders/noise.ts` — 共享 GLSL 噪声函数（simplex、fbm）
+- `src/shaders/inkMountainShader.ts` — 山水背景 shader
+
+**组件文件：** `src/components/InkBackground.tsx`
+
+---
+
+## 3. 朝代星云（DynastyNebulaField）
+
+从粒子云改为水墨晕染 billboard。
+
+**视觉效果：**
+- 每个朝代一个 billboard 四边形，始终面向摄像机
+- Fragment shader 用多层 simplex noise 生成墨团扩散，模拟墨滴入水晕开
+- 朝代色以低饱和度叠加在墨色基底上，如淡彩点染
+- 边缘用噪声驱动的 alpha 衰减，形成不规则墨渍轮廓（非圆形）
+- 微弱时间动画：墨团缓慢呼吸式缩放，模拟墨在水中扩散
+- Galaxy 级别缩放时显示朝代名称（troika-three-text，LXGW WenKai 字体）
+
+**Shader 文件：** `src/shaders/inkNebulaShader.ts`
+
+**修改文件：** `src/components/DynastyNebulaField.tsx` — 重写为 billboard 四边形
+
+---
+
+## 4. 作者节点（AuthorStarField）
+
+保持 InstancedMesh 架构，替换 shader 效果。
+
+**视觉效果：**
+- 核心：墨点形态，噪声扰动圆形 SDF 生成不规则墨滴轮廓
+- 外圈：赛博青（`#00e5ff`）细线光晕，模拟数字化描边
+- 选中态：光晕扩大 + 朱砂红脉冲
+- Hover 态：墨点微扩散，光晕亮度提升
+
+**数据映射不变：**
+- 节点大小：1 + poemCount × 0.4，clamp [1, 4]
+- LOD 文字标签：poet 级别显示作者名
+
+**Shader 文件：** `src/shaders/inkStarShader.ts`（替代 `starMaterial.ts`）
+
+**修改文件：** `src/components/AuthorStarField.tsx` — 替换 shader 引用
+
+---
+
+## 5. 关系连线（RelationshipCurve3D）
+
+从 QuadraticBezierLine 改为水墨笔触 ribbon。
+
+**几何体：** 沿贝塞尔曲线挤出的 ribbon（扁平带状），宽度沿路径变化模拟毛笔提按（中间粗、两端细）。
+
+**Fragment shader：**
+- 沿长度方向用噪声扰动 alpha，产生枯笔飞白效果
+- 边缘不规则，模拟墨迹渗透
+- 颜色取关系类型映射，整体偏墨色，仅微带色相
+
+**交互态：**
+- 默认：透明度 0.15，不抢视觉焦点
+- 相关作者 hover/选中：透明度升至 0.6，宽度微增
+
+**关系强度仍映射到基础宽度。**
+
+**Shader 文件：** `src/shaders/inkLineShader.ts`
+
+**修改文件：** `src/components/RelationshipCurve3D.tsx` — 重写为 ribbon 几何体
+
+---
+
+## 6. 诗作轨道（PoemOrbit3D）
+
+从简单球体改为墨点风格。
+
+**视觉效果：**
+- 每首诗渲染为小墨点，噪声扰动的圆形 SDF
+- Fibonacci 球面分布逻辑不变
+- 墨点大小统一（远小于作者节点）
+- Hover：墨点扩散 + 显示诗名 tooltip
+- 选中：墨点变为朱砂红，其余保持墨色
+- 整组绕作者节点缓慢旋转动画保留
+
+**修改文件：** `src/components/PoemOrbit3D.tsx`
+
+---
+
+## 7. 时间轴（TimelineRail3D）
+
+从线段 + 文字标签改为书法卷轴风格。
+
+**视觉效果：**
+- 主轴线：ribbon 几何体模拟长卷展开，宽度微有起伏（笔触感）
+- 世纪刻度：短竖笔画，噪声扰动边缘
+- 朝代区间：沿轴线底部用淡墨色块标注范围，颜色取朝代色（低饱和度）
+- 朝代名称标签：troika-three-text + LXGW WenKai
+- 印章标记：朝代起止点用程序化 shader 绘制的方形印章（红色方框 + 内部文字），不用纹理
+
+**修改文件：** `src/components/TimelineRail3D.tsx`
+
+---
+
+## 8. UI 层
+
+统一水墨风格，替换现有玻璃拟态。
+
+### 8.1 HUD（顶栏）
+
+- 竖排标题「古诗词网络」置于左上角，从上往下排列
+- 面包屑导航横排，置于竖排标题右侧，字体缩小
+- 搜索和重置按钮改为印章风格（朱砂红方框），hover 时微扩散
+- 背景去掉 backdrop-blur，改为从顶部向下的墨色渐变淡出
+
+**修改文件：** `src/components/HUD.tsx`
+
+### 8.2 SearchOverlay（搜索面板）
+
+- 从模态弹窗改为右侧滑入面板
+- 输入框：底部单线（模拟横线纸），无边框
+- 搜索结果列表：每项左侧加小墨点标记，hover 时墨点扩散
+- 背景：半透明深墨色
+
+**修改文件：** `src/components/SearchOverlay.tsx`
+
+### 8.3 PoemReader（诗文阅读）
+
+- 竖排文字布局（`writing-mode: vertical-rl`）
+- 从右向左阅读，模拟古籍排版
+- 诗文、译文、注释分栏展示
+- 背景：宣纸色（`#e0dcd0`）配深墨文字，与 3D 场景形成明暗反差
+
+**修改文件：** `src/components/PoemReader.tsx`
+
+### 8.4 AuthorPanel（作者面板）
+
+- 保持右侧滑入，宽度不变
+- 背景改为半透明墨色
+- 作者名大字号，风格标签改为小印章样式
+- 诗作列表每项前加墨点
+
+**修改文件：** `src/components/AuthorPanel.tsx`
+
+---
+
+## 9. 摄像机与交互（CameraController）
+
+- 保持 OrbitControls + 语义缩放逻辑
+- 增加缓动阻尼（damping），让摄像机运动更丝滑
+- fly-to 动画加入 ease-out 曲线
+- 新增 HoverCard 组件：作者节点 hover 延迟 300ms 后显示浮动卡片，包含作者名、朝代、代表作
+
+**新增文件：** `src/components/HoverCard.tsx`
+
+**修改文件：** `src/components/CameraController.tsx`
+
+---
+
+## 10. Store 变更
+
+`src/store/useStore.ts` 新增字段：
+
+- `hoveredAuthorTimer: ReturnType<typeof setTimeout> | null` — hover 延迟计时器，用于 HoverCard 300ms 延迟显示
+
+---
+
+## 11. 后处理（Post-processing）
+
+`src/components/Universe3D.tsx` 中的 EffectComposer 调整：
+
+- Bloom：降低强度，避免过度发光破坏水墨质感
+- ToneMapping：保留，微调参数适配新色板
+- Vignette：保留，加深边缘暗角强化卷轴感
+
+---
+
+## 12. 文件变更总览
+
+### 新增
+| 文件 | 说明 |
 |------|------|
-| 面板底板 | 深色半透明 + `backdrop-filter: blur(16px)` + 静态 PNG noise 纹理叠加（`background-image` + `mix-blend-mode: multiply`） |
-| 边框 | 不规则水墨笔触边缘（CSS mask-image 或 SVG mask） |
-| 主字体 | LXGW WenKai（保留） |
-| 标题排版 | 竖排（`writing-mode: vertical-rl`） |
-| 正文排版 | 横排 |
-| 主色 | Cyan `#00d4ff`（科技感）+ 暖金 `#d4a86a`（古风）+ 水墨灰 |
-| 动效 | 水墨扩散/收缩为主，避免机械感的线性动画 |
+| `src/shaders/noise.ts` | 共享 GLSL 噪声函数（simplex、fbm） |
+| `src/shaders/inkMountainShader.ts` | 水墨山水背景 shader |
+| `src/shaders/inkNebulaShader.ts` | 朝代墨团 billboard 材质 |
+| `src/shaders/inkStarShader.ts` | 作者节点墨点 + 赛博光晕 |
+| `src/shaders/inkLineShader.ts` | 关系连线笔触材质 |
+| `src/components/InkBackground.tsx` | 水墨山水背景组件 |
+| `src/components/HoverCard.tsx` | 作者 hover 浮动卡片 |
 
-### 2.2 HUD 顶栏
-
-- 左上标题"诗词元宇宙"改为竖排，配 CSS 实现的红色方印 logo
-- 面包屑用水墨风分隔符
-- 右上按钮改为圆形图标按钮，hover 时水墨晕开动画
-- 底部加一条水墨横线渐隐装饰
-
-### 2.3 搜索面板
-
-- 输入框底部用毛笔横线代替普通下划线
-- 光标闪烁用墨滴动画
-- 结果列表每项左侧加朝代色竖条标识
-- 打开/关闭：墨滴扩散展开 → 收缩消散动画
-
-### 2.4 诗词阅读器
-
-- **古卷式布局**：模拟卷轴展开效果
-- 上下有卷轴装饰边（CSS 实现）
-- 诗词正文居中竖排显示（`writing-mode: vertical-rl`）
-- 译文和赏析横排保持可读性
-- 背景叠淡淡宣纸纹理（CSS noise filter）
-- 打开动画：通过 CSS `clip-path` 或 `max-width` transition 实现从中间向两边展开的卷轴效果，卷轴两端装饰为静态 CSS 伪元素
-
-### 2.5 作者侧边栏
-
-- 顶部装饰：水墨笔触横条 + 朝代色渐变
-- 作者名大号竖排
-- 诗词列表项 hover 时左侧出现墨点标记
-- 滑入动画：右侧滑入 + 水墨飘散粒子
-
-### 2.6 时间轴
-
-- 主轴线从直线改为水墨长横笔触
-- 朝代标记改为印章风格方块（朝代色底 + 白字）
-- 世纪刻度改为短竖笔触
-
----
-
-## 3. 手势交互与动效
-
-### 3.1 触屏手势
-
-| 手势 | 动作 |
+### 修改
+| 文件 | 变更 |
 |------|------|
-| 单指拖拽 | 旋转视角 |
-| 双指捏合 | 缩放（配合语义缩放阈值） |
-| 单指点击 | 选中作者/诗词节点 |
-| 双指拖拽 | 平移画面 |
+| `src/index.css` | 新色彩系统、水墨动画、印章样式 |
+| `src/components/DynastyNebulaField.tsx` | 重写为 billboard 墨团 |
+| `src/components/AuthorStarField.tsx` | 替换 shader 引用 |
+| `src/components/RelationshipCurve3D.tsx` | 重写为 ribbon 笔触 |
+| `src/components/PoemOrbit3D.tsx` | 墨点外观 |
+| `src/components/CameraController.tsx` | 缓动阻尼、HoverCard 集成 |
+| `src/components/TimelineRail3D.tsx` | 书法卷轴风格 |
+| `src/components/Universe3D.tsx` | 替换背景、调整后处理 |
+| `src/components/HUD.tsx` | 竖排标题、印章按钮 |
+| `src/components/SearchOverlay.tsx` | 右侧滑入面板 |
+| `src/components/PoemReader.tsx` | 竖排文字、宣纸背景 |
+| `src/components/AuthorPanel.tsx` | 水墨风格侧栏 |
+| `src/store/useStore.ts` | 新增 hoveredAuthorTimer |
+| `src/App.tsx` | 组件接线调整 |
 
-OrbitControls 默认 touch 配置已匹配上述手势（`ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN`），无需额外配置。
-
-### 3.2 鼠标交互（桌面增强）
-
-| 操作 | 动作 |
+### 删除
+| 文件 | 原因 |
 |------|------|
-| 滚轮 | 缩放（保留动态速度） |
-| 左键拖拽 | 旋转 |
-| 右键拖拽 | 平移 |
-| Hover 0.5s | 显示气泡卡片（作者名 + 朝代 + 诗词数） |
-| 点击 | 选中 + fly-to |
-
-### 3.3 过渡动效
-
-**fly-to 升级**
-- 从线性插值改为 ease-out-cubic 缓动曲线
-- 飞入起始阶段加 2-3 帧微弱位置噪声（振幅 0.3 单位），300ms 内衰减至零
-
-**缩放级别过渡**
-- galaxy ↔ dynasty ↔ poet 切换时淡入淡出
-- 标签文字渐显渐隐（而非突变）
-
-**选中作者**
-- 镜头飞入 + 无关节点淡出（opacity 降至 0.15）
-- 诗词轨道从中心展开动画
-
-**关闭选中**
-- 诗词轨道收缩回中心 → 镜头回退 → 节点淡入
-
-### 3.4 阻尼与惯性
-
-- OrbitControls 阻尼因子从 0.08 提升到 0.12
-- 启用惯性滑动（松开后自然减速）
+| `src/shaders/starMaterial.ts` | 被 inkStarShader.ts 替代 |
+| `src/components/StarfieldBackground.tsx` | 被 InkBackground.tsx 替代 |
 
 ---
 
-## 4. 技术方案
+## 13. 设计约束
 
-### 4.1 自定义 Shader
-
-| Shader | 用途 |
-|--------|------|
-| `inkMountainShader` | 背景水墨山水远景 |
-| `inkParticleShader` | 流动墨点粒子（替换 StarfieldBackground） |
-| `inkNebulaShader` | 朝代水墨晕染团（替换 DynastyNebulaField） |
-| `inkStarShader` | 作者节点水墨笔触 + 霓虹光晕（替换 starMaterial） |
-| `inkLineShader` | 关系线飞白笔触效果 |
-
-所有 shader 共享一套 Perlin/Simplex noise 工具函数。
-
-### 4.2 组件变更
-
-| 组件 | 变更类型 |
-|------|----------|
-| `StarfieldBackground.tsx` | 重写 → 水墨山水 + 墨点粒子 |
-| `DynastyNebulaField.tsx` | 重写 → 水墨晕染团 |
-| `AuthorStarField.tsx` | 重写 shader，保留 InstancedMesh 架构 |
-| `RelationshipCurve3D.tsx` | 重写 → 飞白笔触线条 |
-| `PoemOrbit3D.tsx` | 小改 → 节点外观改为墨点 |
-| `CameraController.tsx` | 修改 → 添加 touch 配置、升级缓动、惯性 |
-| `TimelineRail3D.tsx` | 修改 → 水墨笔触轴线 + 印章标记 |
-| `HUD.tsx` | 重写 → 竖排标题 + 印章 + 水墨按钮 |
-| `SearchOverlay.tsx` | 重写 → 水墨风搜索面板 |
-| `PoemReader.tsx` | 重写 → 古卷式竖排布局 |
-| `AuthorPanel.tsx` | 重写 → 水墨风侧边栏 |
-| `index.css` | 重写 → 新色彩体系 + 水墨动画 + 纹理 |
-
-### 4.3 新增资源
-
-所有资源存放于 `public/textures/`：
-
-- 水墨笔触纹理：1-2 张灰度 PNG，512×512，~30KB/张，用于 CSS mask-image
-- 宣纸纹理：1 张 JPEG，1024×1024，~80KB，用于阅读器背景
-- 印章 SVG：1 个，<5KB，用于 HUD logo 和朝代标记
-
-### 4.4 性能考量
-
-- 所有 shader 效果在 GPU 上运算，不影响主线程
-- InstancedMesh 架构保留，单 draw call 渲染所有作者节点
-- 粒子数量控制在 2000 以内
-- 水墨山水用全屏 quad + shader，无额外几何体
-- 后处理 Effect 对象控制在 4 个以内（Bloom、ChromaticAberration、Vignette、ToneMapping），实际 GPU render pass 数量由 EffectComposer 自动合并
-- 纹理资源总大小控制在 500KB 以内
-
-### 4.5 CSS 架构
-
-**色彩体系（CSS 自定义属性）**
-```
---ink-bg-deep:      #050510      /* 最深背景 */
---ink-bg-mid:       #0d1020      /* 中间背景 */
---ink-bg-panel:     rgba(12, 15, 35, 0.88)  /* 面板底色 */
---ink-text:         #d0c8b8      /* 主文字（暖灰） */
---ink-text-dim:     #6a6258      /* 次要文字 */
---ink-accent-cyan:  #00d4ff      /* 科技感主色 */
---ink-accent-gold:  #d4a86a      /* 古风暖金 */
---ink-accent-red:   #c04040      /* 印章红 */
---ink-border:       rgba(255, 255, 255, 0.06)  /* 边框 */
---ink-glow-cyan:    rgba(0, 212, 255, 0.4)     /* 青色光晕 */
---ink-glow-gold:    rgba(212, 168, 106, 0.4)   /* 金色光晕 */
-```
-
-**关键 Keyframe 动画**
-- `ink-spread`：墨滴扩散（scale 0→1 + opacity 变化），用于面板打开
-- `ink-dissolve`：墨迹消散（opacity + blur 渐出），用于面板关闭
-- `scroll-unroll`：卷轴展开（clip-path 从中心向两侧），用于诗词阅读器
-- `glow-breathe`：霓虹呼吸（box-shadow 强度脉冲），用于按钮和标记
-- `ink-stroke`：笔触绘制（stroke-dashoffset 动画），用于装饰线条
-
-**工具类**
-- `.ink-panel`：毛玻璃面板（blur + noise 纹理 + 边框）
-- `.ink-mask-brush`：水墨笔触边缘 mask（mask-image 引用笔触纹理）
-- `.ink-stamp`：印章样式（红底白字方块 + 微旋转）
-- `.ink-vertical`：竖排文字（writing-mode: vertical-rl）
-
----
-
-## 5. 不在范围内
-
-- 数据结构变更（poems.json、authors.json 等不变）
-- 路由变更
-- 状态管理架构变更（zustand store 结构基本不变，可能新增少量字段）
-- 诗词数据扩充（另一个独立任务）
-- 移动端深度适配（仅保证基础可用）
+- **零纹理依赖：** 所有视觉效果纯 GLSL 程序化生成
+- **性能预算：** InstancedMesh、LOD 标签、语义缩放等现有优化策略全部保留
+- **字体：** 继续使用 LXGW WenKai 子集（~300KB TTF）
+- **兼容性：** WebGL 2.0，不使用 compute shader
+- **渐进实施：** 自底向上——先 shader 基础设施，再 3D 组件，再 UI，最后交互打磨
