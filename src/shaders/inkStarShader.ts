@@ -52,12 +52,12 @@ const fragmentShader = /* glsl */ `
 
     // Cyber glow ring: thin neon outline
     float ring = smoothstep(0.85, 0.88, dist) * smoothstep(0.95, 0.92, dist);
-    vec3 glowColor = vec3(0.0, 0.898, 1.0); // #00e5ff
+    vec3 glowColor = vec3(0.424, 0.784, 0.847); // #6cc8d8
     float glowIntensity = 0.8 + 0.2 * sin(uTime * 1.5);
 
     // Selected state: cinnabar pulse
     float selectedPulse = vSelected * (0.7 + 0.3 * sin(uTime * 2.0));
-    vec3 cinnabar = vec3(1.0, 0.42, 0.21); // #ff6b35
+    vec3 cinnabar = vec3(0.769, 0.243, 0.110); // #c43e1c
     glowColor = mix(glowColor, cinnabar, selectedPulse);
     ring *= (1.0 + vSelected * 0.5);
 

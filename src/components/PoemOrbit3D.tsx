@@ -27,7 +27,7 @@ function fibonacciSphere(index: number, total: number, radius: number): THREE.Ve
 // Ink dot colors
 const INK_COLOR = '#1a1a2e'
 const INK_EMISSIVE = '#2d2d44'
-const CINNABAR = '#ff6b35'
+const CINNABAR = '#c43e1c'
 
 export function PoemOrbit3D({ poems, author, visible }: Props) {
   const groupRef = useRef<THREE.Group>(null)

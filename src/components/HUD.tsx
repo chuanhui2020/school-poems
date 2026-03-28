@@ -1,4 +1,6 @@
 import { useStore } from '../store/useStore'
+import authors from '../data/authors.json'
+import type { Author } from '../types/poem'
 
 export function HUD() {
   const zoomLevel = useStore((s) => s.zoomLevel)
@@ -9,34 +11,38 @@ export function HUD() {
 
   const handleReset = () => resetZoom?.()
 
+  const selectedAuthorName = selectedAuthorId
+    ? (authors as Author[]).find((a) => a.id === selectedAuthorId)?.name ?? selectedAuthorId
+    : null
+
   return (
     <div className="fixed top-0 left-0 right-0 z-30 pointer-events-none">
-      <div className="flex items-start justify-between px-6 py-4">
-        {/* Left: vertical title + breadcrumb */}
-        <div className="flex items-start gap-4 pointer-events-auto">
+      <div className="flex items-center justify-between px-6 py-4">
+        {/* Left: title + breadcrumb */}
+        <div className="flex items-center gap-4 pointer-events-auto">
           <h1
-            className="text-lg cursor-pointer leading-tight"
+            className="text-xl cursor-pointer"
             style={{
-              color: '#e0dcd0',
+              color: 'var(--color-text)',
               fontFamily: "'LXGW WenKai', serif",
-              writingMode: 'vertical-rl',
-              letterSpacing: '0.15em',
+              fontWeight: 300,
+              letterSpacing: '0.1em',
             }}
             onClick={handleReset}
           >
             古诗词网络
           </h1>
           <div
-            className="flex flex-col gap-1 text-xs mt-1"
-            style={{ color: '#e0dcd0', opacity: 0.4 }}
+            className="flex items-center gap-2 text-xs"
+            style={{ color: 'var(--color-text-dim)' }}
           >
             <span>{zoomLevel === 'galaxy' ? '全景' : zoomLevel === 'dynasty' ? '朝代' : '诗人'}</span>
-            {selectedAuthorId && (
+            {selectedAuthorName && (
               <span
                 className="cursor-pointer hover:opacity-80"
                 onClick={() => selectAuthor(null)}
               >
-                › {selectedAuthorId}
+                › {selectedAuthorName}
               </span>
             )}
           </div>
@@ -47,13 +53,13 @@ export function HUD() {
           <button
             onClick={toggleSearch}
             className="ink-stamp text-sm"
-            style={{ fontFamily: "'LXGW WenKai', serif" }}
           >
             搜索
           </button>
           <button
             onClick={handleReset}
             className="ink-stamp text-sm"
+            style={{ transform: 'rotate(1deg)' }}
           >
             全景
           </button>

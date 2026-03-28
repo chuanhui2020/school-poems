@@ -15,7 +15,8 @@
       "Bash(ls \"D:\\\\projects\\\\school-poems\\\\node_modules\\\\.bin\"\" | grep tsc 2>&1 || find \"D:projectsschool-poemsnode_modules\" -name \"tsc \" -maxdepth 4)",
       "Bash(node_modules/.bin/tsc --noEmit 2>&1)",
       "Bash(npm install:*)",
-      "Bash(node_modules/.bin/tsc --noEmit)"
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "WebFetch(domain:school-poems.chuanhui-liu2020.workers.dev)"
     ]
   }
 }

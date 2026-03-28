@@ -50,13 +50,13 @@ export function HoverCard() {
         >
           {author.name}
         </p>
-        <p className="text-xs mt-1" style={{ color: dynasty?.color ?? '#6a6a7a' }}>
+        <p className="text-xs mt-1" style={{ color: dynasty?.color ?? 'var(--color-text-dim)' }}>
           {dynasty?.name}
         </p>
         {topPoems.length > 0 && (
           <div className="mt-2 border-t border-white/5 pt-2">
             {topPoems.map((p) => (
-              <p key={p.id} className="text-xs truncate" style={{ color: '#6a6a7a' }}>
+              <p key={p.id} className="text-xs truncate" style={{ color: 'var(--color-text-dim)' }}>
                 {p.title}
               </p>
             ))}

@@ -32,6 +32,8 @@ export function SearchOverlay({ onSelectAuthor, onSelectPoem }: Props) {
         className="absolute top-0 right-0 h-full w-[360px] max-w-[85vw] animate-slide-in"
         style={{
           background: 'rgba(10, 10, 15, 0.95)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           borderLeft: '1px solid rgba(224, 220, 208, 0.06)',
         }}
         onClick={(e) => e.stopPropagation()}

@@ -6,12 +6,12 @@
   --color-bg-card: #2d2d44;
   --color-bg-panel: rgba(10, 10, 15, 0.92);
   --color-text: #e0dcd0;
-  --color-text-dim: #6a6a7a;
+  --color-text-dim: #8a8a9a;
   --color-text-bright: #f0ece0;
-  --color-accent: #00e5ff;
-  --color-accent-dim: rgba(0, 229, 255, 0.3);
-  --color-cinnabar: #ff6b35;
-  --color-cinnabar-dim: rgba(255, 107, 53, 0.3);
+  --color-accent: #6cc8d8;
+  --color-accent-dim: rgba(108, 200, 216, 0.3);
+  --color-cinnabar: #c43e1c;
+  --color-cinnabar-dim: rgba(196, 62, 28, 0.3);
   --color-ink-far: #1a1a2e;
   --color-ink-mid: #2d2d44;
   --color-ink-near: #4a4a6a;
@@ -57,9 +57,20 @@ body::after {
   font-family: 'LXGW WenKai', serif;
   cursor: pointer;
   transition: box-shadow 0.3s ease;
+  border-radius: 2px;
+  transform: rotate(-1deg);
+  box-shadow: inset 0 0 4px var(--color-cinnabar-dim);
 }
 .ink-stamp:hover {
-  box-shadow: 0 0 12px var(--color-cinnabar-dim);
+  box-shadow: inset 0 0 4px var(--color-cinnabar-dim), 0 0 12px var(--color-cinnabar-dim);
+}
+
+/* Glass panel */
+.ink-glass {
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(224, 220, 208, 0.06);
 }
 
 /* Ink dot marker */

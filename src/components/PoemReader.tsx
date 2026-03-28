@@ -25,8 +25,11 @@ export function PoemReader() {
       <div
         className="max-w-4xl w-full mx-4 p-10 rounded-lg animate-ink-spread"
         style={{
-          background: '#e0dcd0',
-          color: '#1a1a2e',
+          background: 'rgba(15, 15, 25, 0.95)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(224, 220, 208, 0.06)',
+          color: '#e0dcd0',
           maxHeight: '85vh',
           overflow: 'auto',
         }}
@@ -36,7 +39,7 @@ export function PoemReader() {
         <div className="text-center mb-6">
           <h2
             className="text-2xl mb-1"
-            style={{ fontFamily: "'LXGW WenKai', serif", color: '#1a1a2e' }}
+            style={{ fontFamily: "'LXGW WenKai', serif", color: '#e0dcd0' }}
           >
             {poem.title}
           </h2>
@@ -64,8 +67,7 @@ export function PoemReader() {
             fontFamily: "'LXGW WenKai', serif",
             fontSize: '20px',
             lineHeight: 2.5,
-            color: '#1a1a2e',
-            whiteSpace: 'pre-line',
+            color: '#e0dcd0',
             maxHeight: '50vh',
             overflowX: 'auto',
             textAlign: 'center',
@@ -79,12 +81,12 @@ export function PoemReader() {
           {poem.translation && (
             <div
               className="p-4 rounded"
-              style={{ background: 'rgba(26, 26, 46, 0.05)' }}
+              style={{ background: 'rgba(224, 220, 208, 0.05)' }}
             >
-              <p className="text-xs mb-2" style={{ color: '#ff6b35' }}>译文</p>
+              <p className="text-xs mb-2" style={{ color: 'var(--color-cinnabar)' }}>译文</p>
               <p
                 style={{
-                  color: '#2d2d44',
+                  color: 'var(--color-text-dim)',
                   fontSize: '14px',
                   lineHeight: 1.8,
                   fontFamily: "'LXGW WenKai', serif",
@@ -98,12 +100,12 @@ export function PoemReader() {
           {poem.annotation && (
             <div
               className="p-4 rounded"
-              style={{ background: 'rgba(26, 26, 46, 0.05)' }}
+              style={{ background: 'rgba(224, 220, 208, 0.05)' }}
             >
-              <p className="text-xs mb-2" style={{ color: '#ff6b35' }}>赏析</p>
+              <p className="text-xs mb-2" style={{ color: 'var(--color-cinnabar)' }}>赏析</p>
               <p
                 style={{
-                  color: '#2d2d44',
+                  color: 'var(--color-text-dim)',
                   fontSize: '14px',
                   lineHeight: 1.8,
                   fontFamily: "'LXGW WenKai', serif",

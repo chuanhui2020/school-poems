@@ -24,6 +24,8 @@ export default function AuthorPanel({ author, poems, dynastyColor, onClose }: Au
       className="absolute top-0 right-0 h-full w-[420px] max-w-[90vw] z-40 animate-slide-in flex flex-col"
       style={{
         background: 'rgba(10, 10, 15, 0.92)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         borderLeft: '1px solid rgba(224, 220, 208, 0.06)',
       }}
     >
