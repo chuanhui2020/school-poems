@@ -13,7 +13,6 @@ interface Props {
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5))
 
-/** Fibonacci sphere — evenly distributes N points on a sphere surface */
 function fibonacciSphere(index: number, total: number, radius: number): THREE.Vector3 {
   const y = 1 - (index / Math.max(total - 1, 1)) * 2
   const r = Math.sqrt(1 - y * y)
@@ -24,6 +23,11 @@ function fibonacciSphere(index: number, total: number, radius: number): THREE.Ve
     Math.sin(theta) * r * radius
   )
 }
+
+// Ink dot colors
+const INK_COLOR = '#1a1a2e'
+const INK_EMISSIVE = '#2d2d44'
+const CINNABAR = '#ff6b35'
 
 export function PoemOrbit3D({ poems, author, visible }: Props) {
   const groupRef = useRef<THREE.Group>(null)
@@ -59,28 +63,29 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
       {poems.map((poemNode, i) => {
         const pos = positions[i]
         const isSelected = selectedPoemId === poemNode.id
-        const dotColor = isSelected ? '#fff8e0' : author.color
+        const dotColor = isSelected ? CINNABAR : INK_COLOR
+        const emissive = isSelected ? CINNABAR : INK_EMISSIVE
 
         return (
           <group key={poemNode.id} position={pos}>
-            {/* Poem dot */}
             <mesh onClick={handleClick(poemNode.id)}>
-              <sphereGeometry args={[isSelected ? 1.2 : 0.7, 8, 8]} />
+              <sphereGeometry args={[isSelected ? 1.0 : 0.6, 8, 8]} />
               <meshStandardMaterial
                 color={dotColor}
-                emissive={dotColor}
-                emissiveIntensity={isSelected ? 1.0 : 0.4}
-                roughness={0.4}
+                emissive={emissive}
+                emissiveIntensity={isSelected ? 0.8 : 0.2}
+                roughness={0.8}
+                transparent
+                opacity={0.9}
               />
             </mesh>
 
-            {/* Title label — only when selected */}
             {isSelected && (
               <Billboard>
                 <Text
                   position={[0, 2, 0]}
                   fontSize={1.8}
-                  color="#fff8e0"
+                  color="#e0dcd0"
                   anchorX="center"
                   anchorY="bottom"
                   font="/fonts/LXGWWenKai-Subset.ttf"
