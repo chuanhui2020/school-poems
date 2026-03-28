@@ -19,35 +19,36 @@ export function PoemReader() {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: 'rgba(10, 10, 20, 0.92)', backdropFilter: 'blur(20px)' }}
+      style={{ backgroundColor: 'rgba(10, 10, 15, 0.85)' }}
       onClick={() => selectPoem(null)}
     >
       <div
-        className="max-w-2xl w-full mx-4 p-10 rounded-2xl"
+        className="max-w-4xl w-full mx-4 p-10 rounded-lg animate-ink-spread"
         style={{
-          background: 'linear-gradient(135deg, rgba(30,30,50,0.9), rgba(20,20,35,0.95))',
-          border: '1px solid rgba(224,214,200,0.1)',
+          background: '#e0dcd0',
+          color: '#1a1a2e',
+          maxHeight: '85vh',
+          overflow: 'auto',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="text-center mb-8">
+        {/* Header — horizontal */}
+        <div className="text-center mb-6">
           <h2
-            className="text-2xl mb-2"
-            style={{ color: '#e0d6c8', fontFamily: "'LXGW WenKai', serif" }}
+            className="text-2xl mb-1"
+            style={{ fontFamily: "'LXGW WenKai', serif", color: '#1a1a2e' }}
           >
             {poem.title}
           </h2>
-          <p style={{ color: dynasty?.color ?? '#888', opacity: 0.7, fontSize: '14px' }}>
+          <p style={{ color: dynasty?.color ?? '#4a4a6a', fontSize: '14px' }}>
             [{dynasty?.name}] {author?.name}
           </p>
           {poem.form && (
             <span
-              className="inline-block mt-2 px-3 py-1 rounded-full text-xs"
+              className="inline-block mt-2 px-3 py-0.5 text-xs rounded"
               style={{
-                background: 'rgba(224,214,200,0.08)',
-                color: '#e0d6c8',
-                opacity: 0.5,
+                border: '1px solid #4a4a6a',
+                color: '#4a4a6a',
               }}
             >
               {poem.form}
@@ -55,65 +56,66 @@ export function PoemReader() {
           )}
         </div>
 
-        {/* Full text */}
+        {/* Poem text — vertical */}
         <div
-          className="text-center mb-8 leading-loose"
+          className="mx-auto mb-8 px-6 py-4"
           style={{
-            color: '#e0d6c8',
-            fontSize: '18px',
+            writingMode: 'vertical-rl',
             fontFamily: "'LXGW WenKai', serif",
-            lineHeight: 2.2,
+            fontSize: '20px',
+            lineHeight: 2.5,
+            color: '#1a1a2e',
             whiteSpace: 'pre-line',
+            maxHeight: '50vh',
+            overflowX: 'auto',
+            textAlign: 'center',
           }}
         >
           {poem.full_text}
         </div>
 
-        {/* Translation */}
-        {poem.translation && (
-          <div
-            className="mb-6 p-4 rounded-lg"
-            style={{ background: 'rgba(224,214,200,0.04)' }}
-          >
-            <p className="text-xs mb-2" style={{ color: '#e0d6c8', opacity: 0.4 }}>
-              译文
-            </p>
-            <p
-              style={{
-                color: '#e0d6c8',
-                opacity: 0.6,
-                fontSize: '14px',
-                lineHeight: 1.8,
-                fontFamily: "'LXGW WenKai', serif",
-              }}
+        {/* Translation & annotation — horizontal columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {poem.translation && (
+            <div
+              className="p-4 rounded"
+              style={{ background: 'rgba(26, 26, 46, 0.05)' }}
             >
-              {poem.translation}
-            </p>
-          </div>
-        )}
+              <p className="text-xs mb-2" style={{ color: '#ff6b35' }}>译文</p>
+              <p
+                style={{
+                  color: '#2d2d44',
+                  fontSize: '14px',
+                  lineHeight: 1.8,
+                  fontFamily: "'LXGW WenKai', serif",
+                }}
+              >
+                {poem.translation}
+              </p>
+            </div>
+          )}
 
-        {/* Annotation */}
-        {poem.annotation && (
-          <div className="p-4 rounded-lg" style={{ background: 'rgba(224,214,200,0.04)' }}>
-            <p className="text-xs mb-2" style={{ color: '#e0d6c8', opacity: 0.4 }}>
-              赏析
-            </p>
-            <p
-              style={{
-                color: '#e0d6c8',
-                opacity: 0.6,
-                fontSize: '14px',
-                lineHeight: 1.8,
-                fontFamily: "'LXGW WenKai', serif",
-              }}
+          {poem.annotation && (
+            <div
+              className="p-4 rounded"
+              style={{ background: 'rgba(26, 26, 46, 0.05)' }}
             >
-              {poem.annotation}
-            </p>
-          </div>
-        )}
+              <p className="text-xs mb-2" style={{ color: '#ff6b35' }}>赏析</p>
+              <p
+                style={{
+                  color: '#2d2d44',
+                  fontSize: '14px',
+                  lineHeight: 1.8,
+                  fontFamily: "'LXGW WenKai', serif",
+                }}
+              >
+                {poem.annotation}
+              </p>
+            </div>
+          )}
+        </div>
 
-        {/* Close hint */}
-        <p className="text-center mt-8 text-xs" style={{ color: '#e0d6c8', opacity: 0.25 }}>
+        <p className="text-center mt-6 text-xs" style={{ color: '#4a4a6a', opacity: 0.5 }}>
           点击空白处关闭
         </p>
       </div>
