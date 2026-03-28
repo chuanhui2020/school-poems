@@ -4,6 +4,7 @@ import { Universe3D } from './components/Universe3D'
 import { HUD } from './components/HUD'
 import { SearchOverlay } from './components/SearchOverlay'
 import { PoemReader } from './components/PoemReader'
+import { HoverCard } from './components/HoverCard'
 import AuthorPanel from './components/AuthorPanel'
 import authors from './data/authors.json'
 import poems from './data/poems.json'
@@ -86,6 +87,7 @@ export default function App() {
         onSelectPoem={handleSelectPoem}
       />
       <PoemReader />
+      <HoverCard />
       {selectedAuthor && (
         <AuthorPanel
           author={{ ...selectedAuthor, dynastyId: getDynastyName(selectedAuthor.dynastyId) }}

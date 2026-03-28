@@ -6,7 +6,7 @@ import { useStore } from '../store/useStore'
 import { getZoomLevel } from '../hooks/useSemanticZoom'
 
 const INITIAL_POSITION = new THREE.Vector3(0, 0, 300)
-const FLY_SPEED = 0.05
+const FLY_SPEED = 0.04
 
 export function CameraController() {
   const { camera } = useThree()
@@ -42,7 +42,10 @@ export function CameraController() {
   useFrame(() => {
     // Fly-to animation
     if (flyTarget.current) {
-      camera.position.lerp(flyTarget.current, FLY_SPEED)
+      // Ease-out: slow down as we approach target
+      const dist = camera.position.distanceTo(flyTarget.current)
+      const speed = FLY_SPEED * Math.max(0.3, Math.min(1.0, dist / 50))
+      camera.position.lerp(flyTarget.current, speed)
       if (camera.position.distanceTo(flyTarget.current) < 0.5) {
         flyTarget.current = null
       }
@@ -65,8 +68,8 @@ export function CameraController() {
     <OrbitControls
       ref={controlsRef}
       enableDamping
-      dampingFactor={0.08}
-      rotateSpeed={0.5}
+      dampingFactor={0.05}
+      rotateSpeed={0.4}
       zoomSpeed={0.8}
       minDistance={5}
       maxDistance={800}
