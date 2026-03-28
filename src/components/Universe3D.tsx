@@ -137,9 +137,9 @@ function Scene() {
 
       <EffectComposer>
         <Bloom
-          intensity={0.8}
-          luminanceThreshold={0.7}
-          luminanceSmoothing={0.3}
+          intensity={1.8}
+          luminanceThreshold={0.3}
+          luminanceSmoothing={0.6}
           mipmapBlur
         />
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />

@@ -7,9 +7,11 @@ const vertexShader = /* glsl */ `
   varying vec3 vInstanceColor;
   varying float vSelected;
   varying float vHovered;
+  varying float vBrightness;
 
   attribute float aSelected;
   attribute float aHovered;
+  attribute float aBrightness;
 
   void main() {
     #ifdef USE_INSTANCING_COLOR
@@ -20,6 +22,7 @@ const vertexShader = /* glsl */ `
 
     vSelected = aSelected;
     vHovered = aHovered;
+    vBrightness = aBrightness;
 
     vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
     vNormal = normalize(normalMatrix * mat3(instanceMatrix) * normal);
@@ -35,6 +38,7 @@ const fragmentShader = /* glsl */ `
   varying vec3 vInstanceColor;
   varying float vSelected;
   varying float vHovered;
+  varying float vBrightness;
 
   ${simplexNoise3D}
 
@@ -47,13 +51,15 @@ const fragmentShader = /* glsl */ `
     float noise = snoise(vWorldPosition * 1.2 + uTime * 0.08) * 0.5 + 0.5;
     float inkEdge = smoothstep(0.9 + noise * 0.1, 0.6, dist);
 
-    // Base ink color: dark with instance color tint
+    // Base ink color: dark with instance color tint, brightened by core
+    float core = pow(max(dot(viewDir, normal), 0.0), 3.0);
     vec3 inkColor = mix(vec3(0.05, 0.05, 0.08), vInstanceColor * 0.4, noise * 0.6);
+    inkColor = mix(inkColor, vInstanceColor * 0.8, core * 0.5 * vBrightness);
 
-    // Cyber glow ring: thin neon outline
+    // Cyber glow ring: thin neon outline, boosted by brightness
     float ring = smoothstep(0.85, 0.88, dist) * smoothstep(0.95, 0.92, dist);
     vec3 glowColor = vec3(0.424, 0.784, 0.847); // #6cc8d8
-    float glowIntensity = 0.8 + 0.2 * sin(uTime * 1.5);
+    float glowIntensity = (0.8 + 0.2 * sin(uTime * 1.5)) * vBrightness * 1.6;
 
     // Selected state: cinnabar pulse
     float selectedPulse = vSelected * (0.7 + 0.3 * sin(uTime * 2.0));

@@ -16,7 +16,13 @@
       "Bash(node_modules/.bin/tsc --noEmit 2>&1)",
       "Bash(npm install:*)",
       "Bash(node_modules/.bin/tsc --noEmit)",
-      "WebFetch(domain:school-poems.chuanhui-liu2020.workers.dev)"
+      "WebFetch(domain:school-poems.chuanhui-liu2020.workers.dev)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git rebase:*)",
+      "Bash(GIT_EDITOR=true git rebase --continue 2>&1)",
+      "Bash(git:*)",
+      "Bash(EDITOR=true git rebase --continue)"
     ]
   }
 }

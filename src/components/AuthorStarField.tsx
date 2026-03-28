@@ -19,6 +19,7 @@ const _tempColor = new THREE.Color()
 
 export function AuthorStarField({ nodes, zoomLevel }: Props) {
   const meshRef = useRef<THREE.InstancedMesh>(null)
+  const geoRef = useRef<THREE.SphereGeometry>(null)
   const selectAuthor = useStore((s) => s.selectAuthor)
   const setFlyToTarget = useStore((s) => s.setFlyToTarget)
   const selectedAuthorId = useStore((s) => s.selectedAuthorId)
@@ -27,9 +28,25 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
 
   const starMaterial = useMemo(() => createInkStarMaterial(), [])
 
+  // Brightness attribute based on poemCount
+  const brightnessAttr = useMemo(() => {
+    const arr = new Float32Array(nodes.length)
+    for (let i = 0; i < nodes.length; i++) {
+      arr[i] = Math.min(3.0, 1.0 + nodes[i].poemCount * 0.15)
+    }
+    return new THREE.InstancedBufferAttribute(arr, 1)
+  }, [nodes])
+
   // Build index → node lookup
   const nodeIndex = useMemo(() => new Map(nodes.map((n, i) => [i, n])), [nodes])
   const idToIndex = useMemo(() => new Map(nodes.map((n, i) => [n.id, i])), [nodes])
+
+  // Attach brightness attribute to geometry
+  useEffect(() => {
+    const geo = geoRef.current
+    if (!geo) return
+    geo.setAttribute('aBrightness', brightnessAttr)
+  }, [brightnessAttr])
 
   // Set instance matrices and colors
   useEffect(() => {
@@ -143,7 +160,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
         onPointerMove={handlePointerMove}
         onPointerOut={handlePointerOut}
       >
-        <sphereGeometry args={[1, 16, 16]} />
+        <sphereGeometry ref={geoRef} args={[1, 16, 16]} />
         <primitive object={starMaterial} attach="material" />
       </instancedMesh>
 
