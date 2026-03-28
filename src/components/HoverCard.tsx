@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useStore } from '../store/useStore'
 import authors from '../data/authors.json'
 import poems from '../data/poems.json'
@@ -6,8 +7,18 @@ import type { Author, Poem, Dynasty } from '../types/poem'
 
 export function HoverCard() {
   const hoveredNodeId = useStore((s) => s.hoveredNodeId)
+  const [showCard, setShowCard] = useState(false)
 
-  if (!hoveredNodeId) return null
+  useEffect(() => {
+    if (!hoveredNodeId) {
+      setShowCard(false)
+      return
+    }
+    const timer = setTimeout(() => setShowCard(true), 300)
+    return () => clearTimeout(timer)
+  }, [hoveredNodeId])
+
+  if (!showCard || !hoveredNodeId) return null
 
   const author = (authors as Author[]).find((a) => a.id === hoveredNodeId)
   if (!author) return null

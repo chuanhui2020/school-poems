@@ -101,10 +101,8 @@ export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted,
     return { geometry, material }
   }, [sourceNode.x, sourceNode.y, sourceNode.z, targetNode.x, targetNode.y, targetNode.z, color])
 
-  // Update opacity reactively
-  useMemo(() => {
-    material.uniforms.uOpacity.value = opacity
-  }, [material, opacity])
+  // Update opacity directly — ref-like mutation, no re-render needed
+  material.uniforms.uOpacity.value = opacity
 
   return <mesh geometry={geometry} material={material} />
 }

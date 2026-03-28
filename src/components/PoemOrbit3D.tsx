@@ -1,4 +1,4 @@
-import { useRef, useMemo, useCallback } from 'react'
+import { useRef, useMemo, useCallback, useState } from 'react'
 import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
@@ -33,6 +33,7 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
   const groupRef = useRef<THREE.Group>(null)
   const selectPoem = useStore((s) => s.selectPoem)
   const selectedPoemId = useStore((s) => s.selectedPoemId)
+  const [hoveredPoemId, setHoveredPoemId] = useState<string | null>(null)
 
   const orbitRadius = author.radius * 4 + 6
 
@@ -63,24 +64,30 @@ export function PoemOrbit3D({ poems, author, visible }: Props) {
       {poems.map((poemNode, i) => {
         const pos = positions[i]
         const isSelected = selectedPoemId === poemNode.id
+        const isHovered = hoveredPoemId === poemNode.id
         const dotColor = isSelected ? CINNABAR : INK_COLOR
         const emissive = isSelected ? CINNABAR : INK_EMISSIVE
+        const sphereRadius = isSelected ? 1.0 : isHovered ? 0.85 : 0.6
 
         return (
           <group key={poemNode.id} position={pos}>
-            <mesh onClick={handleClick(poemNode.id)}>
-              <sphereGeometry args={[isSelected ? 1.0 : 0.6, 8, 8]} />
+            <mesh
+              onClick={handleClick(poemNode.id)}
+              onPointerEnter={(e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); setHoveredPoemId(poemNode.id) }}
+              onPointerLeave={() => setHoveredPoemId(null)}
+            >
+              <sphereGeometry args={[sphereRadius, 8, 8]} />
               <meshStandardMaterial
                 color={dotColor}
                 emissive={emissive}
-                emissiveIntensity={isSelected ? 0.8 : 0.2}
+                emissiveIntensity={isSelected ? 0.8 : isHovered ? 0.5 : 0.2}
                 roughness={0.8}
                 transparent
                 opacity={0.9}
               />
             </mesh>
 
-            {isSelected && (
+            {(isSelected || isHovered) && (
               <Billboard>
                 <Text
                   position={[0, 2, 0]}

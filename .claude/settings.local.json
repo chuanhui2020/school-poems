@@ -10,7 +10,12 @@
       "Bash(node_modules/.bin/tsc.cmd --noEmit)",
       "Bash(./node_modules/typescript/bin/tsc --noEmit)",
       "Bash(node -e \"require\\(''child_process''\\).execSync\\(''node node_modules/typescript/lib/tsc.js --noEmit'', {stdio:''inherit''}\\)\")",
-      "Bash(cmd.exe /c \"cd /d D:\\\\projects\\\\school-poems && node_modules\\\\.bin\\\\tsc --noEmit 2>&1\")"
+      "Bash(cmd.exe /c \"cd /d D:\\\\projects\\\\school-poems && node_modules\\\\.bin\\\\tsc --noEmit 2>&1\")",
+      "Bash(ls node_modules/.bin/tsc*)",
+      "Bash(ls \"D:\\\\projects\\\\school-poems\\\\node_modules\\\\.bin\"\" | grep tsc 2>&1 || find \"D:projectsschool-poemsnode_modules\" -name \"tsc \" -maxdepth 4)",
+      "Bash(node_modules/.bin/tsc --noEmit 2>&1)",
+      "Bash(npm install:*)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
     ]
   }
 }
