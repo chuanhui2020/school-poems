@@ -11,7 +11,7 @@ import authorsData from '../data/authors.json'
 import poemsData from '../data/poems.json'
 import dynastiesData from '../data/dynasties.json'
 import relationshipsData from '../data/relationships.json'
-import { StarfieldBackground } from './StarfieldBackground'
+import { InkBackground } from './InkBackground'
 import { CameraController } from './CameraController'
 import { DynastyNebulaField } from './DynastyNebulaField'
 import { AuthorStarField } from './AuthorStarField'
@@ -96,12 +96,12 @@ function Scene() {
 
   return (
     <>
-      <ambientLight intensity={0.4} color="#e0d6c8" />
-      <directionalLight position={[200, 300, 200]} intensity={0.8} color="#fff8e8" />
-      <pointLight position={[-300, -100, -200]} intensity={0.3} color="#8899cc" />
+      <ambientLight intensity={0.3} color="#e0dcd0" />
+      <directionalLight position={[200, 300, 200]} intensity={0.5} color="#e0dcd0" />
+      <pointLight position={[-300, -100, -200]} intensity={0.2} color="#4a4a6a" />
 
       <CameraController />
-      <StarfieldBackground />
+      <InkBackground />
       <TimelineRail3D dynasties={dynasties} />
       <DynastyNebulaField dynasties={dynasties} />
 
@@ -137,13 +137,13 @@ function Scene() {
 
       <EffectComposer>
         <Bloom
-          intensity={1.2}
-          luminanceThreshold={0.6}
-          luminanceSmoothing={0.4}
+          intensity={0.8}
+          luminanceThreshold={0.7}
+          luminanceSmoothing={0.3}
           mipmapBlur
         />
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-        <Vignette eskil={false} offset={0.3} darkness={0.6} />
+        <Vignette eskil={false} offset={0.25} darkness={0.75} />
       </EffectComposer>
     </>
   )
@@ -154,7 +154,7 @@ export function Universe3D() {
     <Canvas
       camera={{ position: [0, 0, 300], fov: 60, near: 0.1, far: 5000 }}
       gl={{ antialias: true, alpha: false, toneMapping: THREE.NoToneMapping }}
-      style={{ background: '#0a0a12' }}
+      style={{ background: '#0a0a0f' }}
     >
       <Scene />
     </Canvas>
