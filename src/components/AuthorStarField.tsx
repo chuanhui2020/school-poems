@@ -1,6 +1,6 @@
 import { useRef, useMemo, useCallback, useEffect } from 'react'
 import { useFrame, type ThreeEvent } from '@react-three/fiber'
-import { createStarShaderMaterial } from '../shaders/starMaterial'
+import { createInkStarMaterial } from '../shaders/inkStarShader'
 import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { AuthorNode } from '../types/nodes'
@@ -25,7 +25,7 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
   const setHoveredNode = useStore((s) => s.setHoveredNode)
   const hoveredNodeId = useStore((s) => s.hoveredNodeId)
 
-  const starMaterial = useMemo(() => createStarShaderMaterial(), [])
+  const starMaterial = useMemo(() => createInkStarMaterial(), [])
 
   // Build index → node lookup
   const nodeIndex = useMemo(() => new Map(nodes.map((n, i) => [i, n])), [nodes])
@@ -49,6 +49,18 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
     mesh.computeBoundingSphere()
   }, [nodes])
 
+  // Per-instance selected/hovered attributes
+  const selectedAttr = useMemo(() => new Float32Array(nodes.length), [nodes.length])
+  const hoveredAttr = useMemo(() => new Float32Array(nodes.length), [nodes.length])
+
+  useEffect(() => {
+    const mesh = meshRef.current
+    if (!mesh) return
+    const geo = mesh.geometry
+    geo.setAttribute('aSelected', new THREE.InstancedBufferAttribute(selectedAttr, 1))
+    geo.setAttribute('aHovered', new THREE.InstancedBufferAttribute(hoveredAttr, 1))
+  }, [nodes.length, selectedAttr, hoveredAttr])
+
   // Animate hovered/selected instance scale
   useFrame(({ clock }) => {
     const mesh = meshRef.current
@@ -66,16 +78,22 @@ export function AuthorStarField({ nodes, zoomLevel }: Props) {
       mesh.getMatrixAt(i, _tempMatrix)
       _tempVec.setFromMatrixPosition(_tempMatrix)
 
-      // Extract current scale from matrix
       const currentScale = _tempMatrix.elements[0]
       const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.1)
 
       _tempMatrix.makeScale(newScale, newScale, newScale)
       _tempMatrix.setPosition(_tempVec.x, _tempVec.y, _tempVec.z)
       mesh.setMatrixAt(i, _tempMatrix)
+
+      selectedAttr[i] = isSelected ? 1.0 : 0.0
+      hoveredAttr[i] = isHovered ? 1.0 : 0.0
     }
 
     mesh.instanceMatrix.needsUpdate = true
+    const selGeo = mesh.geometry.getAttribute('aSelected') as THREE.InstancedBufferAttribute
+    const hovGeo = mesh.geometry.getAttribute('aHovered') as THREE.InstancedBufferAttribute
+    if (selGeo) selGeo.needsUpdate = true
+    if (hovGeo) hovGeo.needsUpdate = true
     starMaterial.uniforms.uTime.value = clock.getElapsedTime()
   })
 
