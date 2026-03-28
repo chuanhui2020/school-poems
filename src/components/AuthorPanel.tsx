@@ -20,123 +20,151 @@ export default function AuthorPanel({ author, poems, dynastyColor, onClose }: Au
   }, [onClose])
 
   return (
-    <div className="absolute top-0 right-0 h-full w-[420px] max-w-[90vw] z-40 animate-slide-in"
-      style={{ background: 'var(--color-bg-panel)', borderLeft: `1px solid var(--color-border)` }}
+    <div
+      className="absolute top-0 right-0 h-full w-[420px] max-w-[90vw] z-40 animate-slide-in flex flex-col"
+      style={{
+        background: 'rgba(10, 10, 15, 0.92)',
+        borderLeft: '1px solid rgba(224, 220, 208, 0.06)',
+      }}
     >
-      {/* Top glow line */}
-      <div className="h-[1px] w-full" style={{ background: dynastyColor, boxShadow: `0 0 12px ${dynastyColor}60, 0 0 4px ${dynastyColor}` }} />
-      <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="p-5 border-b border-white/5">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-white">{author.name}</h2>
-              <div className="flex items-center gap-2 mt-1 text-sm text-[var(--color-text-dim)]">
-                {author.courtesy_name && <span>字{author.courtesy_name}</span>}
-                <span
-                  className="px-2 py-0.5 rounded text-xs text-white/90"
-                  style={{ backgroundColor: dynastyColor }}
-                >
-                  {author.dynastyId}
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-[var(--color-text-dim)] hover:text-white text-xl cursor-pointer p-1"
-              aria-label="关闭"
+      {/* Top accent line */}
+      <div className="h-[1px] w-full" style={{ background: dynastyColor, boxShadow: `0 0 8px ${dynastyColor}40` }} />
+
+      {/* Header */}
+      <div className="p-5 border-b" style={{ borderColor: 'rgba(224, 220, 208, 0.06)' }}>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: '#e0dcd0', fontFamily: "'LXGW WenKai', serif" }}
             >
-              ✕
-            </button>
-          </div>
-
-          {author.style_labels.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-3">
-              {author.style_labels.map((s) => (
-                <span key={s} className="px-2 py-0.5 rounded-full text-xs border border-white/10 text-[var(--color-accent)]">
-                  {s}
-                </span>
-              ))}
+              {author.name}
+            </h2>
+            <div className="flex items-center gap-2 mt-1 text-sm" style={{ color: '#6a6a7a' }}>
+              {author.courtesy_name && <span>字{author.courtesy_name}</span>}
+              <span
+                className="px-2 py-0.5 rounded text-xs"
+                style={{ backgroundColor: dynastyColor, color: '#e0dcd0' }}
+              >
+                {author.dynastyId}
+              </span>
             </div>
-          )}
-
-          {author.brief_bio && (
-            <p className="mt-3 text-sm text-[var(--color-text-dim)] leading-relaxed">
-              {author.brief_bio}
-            </p>
-          )}
+          </div>
+          <button
+            onClick={onClose}
+            className="text-xl cursor-pointer p-1"
+            style={{ color: '#6a6a7a' }}
+            aria-label="关闭"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* Poems list */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <div className="text-xs text-[var(--color-text-dim)] mb-3">
-            收录 {poems.length} 首作品
+        {/* Style labels as mini stamps */}
+        {author.style_labels.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {author.style_labels.map((s) => (
+              <span
+                key={s}
+                className="px-2 py-0.5 text-xs"
+                style={{
+                  border: '1px solid var(--color-cinnabar)',
+                  color: 'var(--color-cinnabar)',
+                }}
+              >
+                {s}
+              </span>
+            ))}
           </div>
+        )}
 
-          <div className="space-y-2">
-            {poems.map((poem) => {
-              const isExpanded = expandedPoemId === poem.id
-              return (
-                <div
-                  key={poem.id}
-                  className="rounded-lg border border-white/5 overflow-hidden transition-colors hover:border-white/10"
-                  style={{ background: isExpanded ? 'rgba(255,255,255,0.03)' : 'transparent' }}
+        {author.brief_bio && (
+          <p
+            className="mt-3 text-sm leading-relaxed"
+            style={{ color: '#6a6a7a' }}
+          >
+            {author.brief_bio}
+          </p>
+        )}
+      </div>
+
+      {/* Poems list */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="text-xs mb-3" style={{ color: '#6a6a7a' }}>
+          收录 {poems.length} 首作品
+        </div>
+
+        <div className="space-y-2">
+          {poems.map((poem) => {
+            const isExpanded = expandedPoemId === poem.id
+            return (
+              <div
+                key={poem.id}
+                className="rounded-lg overflow-hidden transition-colors"
+                style={{
+                  border: '1px solid rgba(224, 220, 208, 0.04)',
+                  background: isExpanded ? 'rgba(224, 220, 208, 0.03)' : 'transparent',
+                }}
+              >
+                <button
+                  onClick={() => setExpandedPoemId(isExpanded ? null : poem.id)}
+                  className="ink-dot w-full text-left px-4 py-3 flex items-center justify-between cursor-pointer"
                 >
-                  <button
-                    onClick={() => setExpandedPoemId(isExpanded ? null : poem.id)}
-                    className="w-full text-left px-4 py-3 flex items-center justify-between cursor-pointer"
-                  >
-                    <div>
-                      <span className="text-white font-medium">{poem.title}</span>
-                      <span className="text-xs text-[var(--color-text-dim)] ml-2">{poem.form}</span>
+                  <div>
+                    <span style={{ color: '#e0dcd0' }}>{poem.title}</span>
+                    <span className="text-xs ml-2" style={{ color: '#6a6a7a' }}>{poem.form}</span>
+                  </div>
+                  <span className="text-sm" style={{ color: '#6a6a7a' }}>
+                    {isExpanded ? '▾' : '▸'}
+                  </span>
+                </button>
+
+                {isExpanded && (
+                  <div className="px-4 pb-4 animate-fade-in">
+                    <div
+                      className="whitespace-pre-line text-sm leading-relaxed mb-3 pl-3 border-l-2"
+                      style={{ borderColor: dynastyColor, color: '#e0dcd0' }}
+                    >
+                      {poem.full_text}
                     </div>
-                    <span className="text-[var(--color-text-dim)] text-sm">
-                      {isExpanded ? '▾' : '▸'}
-                    </span>
-                  </button>
 
-                  {isExpanded && (
-                    <div className="px-4 pb-4 animate-fade-in">
-                      <div className="whitespace-pre-line text-sm text-[var(--color-text)] leading-relaxed mb-3 pl-3 border-l-2"
-                        style={{ borderColor: dynastyColor }}
-                      >
-                        {poem.full_text}
+                    {poem.translation && (
+                      <div className="text-xs leading-relaxed mb-2" style={{ color: '#6a6a7a' }}>
+                        <span style={{ color: '#ff6b35' }} className="mr-1">译</span>
+                        {poem.translation}
                       </div>
+                    )}
 
-                      {poem.translation && (
-                        <div className="text-xs text-[var(--color-text-dim)] leading-relaxed mb-2">
-                          <span className="text-[var(--color-accent)] mr-1">译</span>
-                          {poem.translation}
-                        </div>
-                      )}
-
-                      {poem.annotation && (
-                        <div className="text-xs text-[var(--color-text-dim)] leading-relaxed">
-                          <span className="text-[var(--color-accent)] mr-1">注</span>
-                          {poem.annotation}
-                        </div>
-                      )}
-
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {poem.themes.map((t) => (
-                          <span key={t} className="px-1.5 py-0.5 rounded text-[10px] bg-white/5 text-[var(--color-text-dim)]">
-                            {t}
-                          </span>
-                        ))}
+                    {poem.annotation && (
+                      <div className="text-xs leading-relaxed" style={{ color: '#6a6a7a' }}>
+                        <span style={{ color: '#ff6b35' }} className="mr-1">注</span>
+                        {poem.annotation}
                       </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {poem.themes.map((t) => (
+                        <span
+                          key={t}
+                          className="px-1.5 py-0.5 rounded text-[10px]"
+                          style={{ background: 'rgba(224, 220, 208, 0.05)', color: '#6a6a7a' }}
+                        >
+                          {t}
+                        </span>
+                      ))}
                     </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-
-          {poems.length === 0 && (
-            <div className="text-center text-[var(--color-text-dim)] py-8">
-              暂无收录作品
-            </div>
-          )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
+
+        {poems.length === 0 && (
+          <div className="text-center py-8" style={{ color: '#6a6a7a' }}>
+            暂无收录作品
+          </div>
+        )}
       </div>
     </div>
   )
