@@ -18,6 +18,7 @@ import { AuthorStarField } from './AuthorStarField'
 import { PoemOrbit3D } from './PoemOrbit3D'
 import { RelationshipCurve3D } from './RelationshipCurve3D'
 import { TimelineRail3D } from './TimelineRail3D'
+import { AmbientParticles } from './AmbientParticles'
 
 const authors = authorsData as Author[]
 const poems = poemsData as Poem[]
@@ -97,12 +98,13 @@ function Scene() {
 
   return (
     <>
-      <ambientLight intensity={0.3} color="#e0dcd0" />
-      <directionalLight position={[200, 300, 200]} intensity={0.5} color="#e0dcd0" />
-      <pointLight position={[-300, -100, -200]} intensity={0.2} color="#4a4a6a" />
+      <ambientLight intensity={0.15} color="#a0b0c0" />
+      <directionalLight position={[200, 300, 200]} intensity={0.3} color="#c0d0e0" />
+      <pointLight position={[-300, -100, -200]} intensity={0.15} color="#2040a0" />
 
       <CameraController />
       <InkBackground />
+      <AmbientParticles />
       <TimelineRail3D dynasties={dynasties} regions={dynastyRegions} />
       <DynastyNebulaField dynasties={dynasties} regions={dynastyRegions} />
 
@@ -138,13 +140,13 @@ function Scene() {
 
       <EffectComposer>
         <Bloom
-          intensity={1.8}
-          luminanceThreshold={0.3}
-          luminanceSmoothing={0.6}
+          intensity={2.5}
+          luminanceThreshold={0.2}
+          luminanceSmoothing={0.7}
           mipmapBlur
         />
         <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-        <Vignette eskil={false} offset={0.25} darkness={0.75} />
+        <Vignette eskil={false} offset={0.3} darkness={0.5} />
       </EffectComposer>
     </>
   )

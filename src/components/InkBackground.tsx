@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { inkMountainVertex, inkMountainFragment } from '../shaders/inkMountainShader'
+import { spaceGridVertex, spaceGridFragment } from '../shaders/spaceGridShader'
 
 export function InkBackground() {
   const materialRef = useRef<THREE.ShaderMaterial>(null)
@@ -19,8 +19,8 @@ export function InkBackground() {
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={materialRef}
-        vertexShader={inkMountainVertex}
-        fragmentShader={inkMountainFragment}
+        vertexShader={spaceGridVertex}
+        fragmentShader={spaceGridFragment}
         uniforms={{
           uTime: { value: 0 },
           uResolution: { value: new THREE.Vector2(size.width, size.height) },

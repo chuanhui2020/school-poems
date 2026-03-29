@@ -1,4 +1,5 @@
 import { useMemo, useEffect } from 'react'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { RelationshipEdge, AuthorNode } from '../types/nodes'
 import { inkLineVertex, inkLineFragment } from '../shaders/inkLineShader'
@@ -77,7 +78,7 @@ function buildRibbonGeometry(
 
 export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted, dimmed }: Props) {
   const color = TYPE_COLORS[edge.type] ?? '#aaaaaa'
-  const opacity = dimmed ? 0.05 : highlighted ? 0.6 : 0.15
+  const opacity = dimmed ? 0.03 : highlighted ? 0.9 : 0.25
 
   const { geometry, material } = useMemo(() => {
     const s = new THREE.Vector3(sourceNode.x, sourceNode.y, sourceNode.z)
@@ -94,11 +95,13 @@ export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted,
         uTime: { value: 0 },
         uColor: { value: new THREE.Color(color) },
         uOpacity: { value: opacity },
+        uHighlighted: { value: highlighted ? 1.0 : 0.0 },
       },
       transparent: true,
       depthWrite: false,
       side: THREE.DoubleSide,
       toneMapped: false,
+      blending: THREE.AdditiveBlending,
     })
 
     return { geometry, material }
@@ -111,8 +114,13 @@ export function RelationshipCurve3D({ edge, sourceNode, targetNode, highlighted,
     }
   }, [geometry, material])
 
-  // Update opacity directly — ref-like mutation, no re-render needed
+  // Update uniforms directly — ref-like mutation, no re-render needed
   material.uniforms.uOpacity.value = opacity
+  material.uniforms.uHighlighted.value = highlighted ? 1.0 : 0.0
+
+  useFrame(({ clock }) => {
+    material.uniforms.uTime.value = clock.getElapsedTime()
+  })
 
   return <mesh geometry={geometry} material={material} />
 }

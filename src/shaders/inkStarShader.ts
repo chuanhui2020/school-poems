@@ -46,35 +46,47 @@ const fragmentShader = /* glsl */ `
     vec3 viewDir = normalize(cameraPosition - vWorldPosition);
     vec3 normal = normalize(vNormal);
 
-    // Ink dot: noise-distorted SDF circle
     float dist = length(vNormal.xy);
-    float noise = snoise(vWorldPosition * 1.2 + uTime * 0.08) * 0.5 + 0.5;
-    float inkEdge = smoothstep(0.9 + noise * 0.1, 0.6, dist);
 
-    // Base ink color: dark with instance color tint, brightened by core
-    float core = pow(max(dot(viewDir, normal), 0.0), 3.0);
-    vec3 inkColor = mix(vec3(0.05, 0.05, 0.08), vInstanceColor * 0.4, noise * 0.6);
-    inkColor = mix(inkColor, vInstanceColor * 0.8, core * 0.5 * vBrightness);
+    // Bright core: white-hot center fading to dynasty color
+    float core = 1.0 - smoothstep(0.0, 0.5, dist);
+    core = pow(core, 2.0);
+    vec3 coreColor = mix(vInstanceColor * 1.2, vec3(1.0, 1.0, 1.0), core * 0.8);
+    coreColor *= vBrightness;
 
-    // Cyber glow ring: thin neon outline, boosted by brightness
-    float ring = smoothstep(0.85, 0.88, dist) * smoothstep(0.95, 0.92, dist);
-    vec3 glowColor = vec3(0.424, 0.784, 0.847); // #6cc8d8
-    float glowIntensity = (0.8 + 0.2 * sin(uTime * 1.5)) * vBrightness * 1.6;
+    // Inner glow: soft radial gradient in dynasty color
+    float innerGlow = 1.0 - smoothstep(0.0, 0.8, dist);
+    innerGlow = pow(innerGlow, 1.5);
 
-    // Selected state: cinnabar pulse
-    float selectedPulse = vSelected * (0.7 + 0.3 * sin(uTime * 2.0));
-    vec3 cinnabar = vec3(0.769, 0.243, 0.110); // #c43e1c
-    glowColor = mix(glowColor, cinnabar, selectedPulse);
-    ring *= (1.0 + vSelected * 0.5);
+    // Outer halo ring
+    float ring = smoothstep(0.75, 0.82, dist) * smoothstep(0.95, 0.88, dist);
+    float ringPulse = 0.85 + 0.15 * sin(uTime * 2.0 + vWorldPosition.x * 0.1);
+    vec3 haloColor = vInstanceColor * 1.5 * ringPulse * vBrightness;
 
-    // Hovered state: expand glow
-    glowIntensity *= (1.0 + vHovered * 0.4);
-    float hoverSpread = vHovered * 0.05;
-    float expandedRing = smoothstep(0.80 - hoverSpread, 0.83, dist) * smoothstep(0.98, 0.95, dist);
-    ring = max(ring, expandedRing * vHovered);
+    // Selected state: bright cyan pulse + expanded ring
+    float selectedPulse = vSelected * (0.7 + 0.3 * sin(uTime * 3.0));
+    vec3 selectColor = vec3(0.2, 0.9, 1.0); // bright cyan
+    haloColor = mix(haloColor, selectColor * 2.0, selectedPulse);
+    float selectedRing = smoothstep(0.65, 0.72, dist) * smoothstep(0.98, 0.92, dist);
+    ring = mix(ring, selectedRing, vSelected);
 
-    vec3 color = inkColor * inkEdge + glowColor * ring * glowIntensity;
-    float alpha = max(inkEdge, ring * 0.8);
+    // Hovered state: hexagonal scan effect + expanded glow
+    float hoverExpand = vHovered * 0.1;
+    float hoverRing = smoothstep(0.70 - hoverExpand, 0.78, dist) * smoothstep(0.98, 0.90, dist);
+    ring = max(ring, hoverRing * vHovered);
+    float hoverBoost = 1.0 + vHovered * 0.6;
+
+    // Outer soft glow (additive bloom feeder)
+    float outerGlow = smoothstep(1.0, 0.3, dist) * 0.15 * vBrightness;
+
+    // Compose
+    vec3 color = coreColor * core
+               + vInstanceColor * innerGlow * 0.6 * vBrightness
+               + haloColor * ring * hoverBoost
+               + vInstanceColor * outerGlow;
+
+    float alpha = max(core, max(innerGlow * 0.7, max(ring * 0.9, outerGlow)));
+    alpha = clamp(alpha, 0.0, 1.0);
 
     gl_FragColor = vec4(color, alpha);
   }
