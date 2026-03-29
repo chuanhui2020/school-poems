@@ -2,13 +2,13 @@ import { useMemo } from 'react'
 import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { Dynasty } from '../types/poem'
-import { build3DTimeScale } from '../lib/layout'
+import type { DynastyRegion3D } from '../lib/layout'
 
 interface Props {
   dynasties: Dynasty[]
+  regions: DynastyRegion3D[]
 }
 
-const timeScale = build3DTimeScale()
 const RAIL_Y = -80
 const SEGMENTS = 200
 const RAIL_HALF_WIDTH = 0.6
@@ -37,40 +37,21 @@ function buildRailRibbon(xMin: number, xMax: number): THREE.BufferGeometry {
   return geo
 }
 
-/** Build a short vertical tick ribbon */
-function buildTickRibbon(height: number): THREE.BufferGeometry {
-  const hw = 0.15
-  const wobble = 0.03
-  const vertices = [
-    -hw - wobble, 0, 0,
-    hw + wobble, 0, 0,
-    -hw, height, 0,
-    hw, height, 0,
-  ]
-  const geo = new THREE.BufferGeometry()
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
-  geo.setIndex([0, 1, 2, 1, 3, 2])
-  return geo
-}
-
-const TICK_HEIGHT = 6
 const STAMP_SIZE = 4
 
-export function TimelineRail3D({ dynasties }: Props) {
-  const xMin = timeScale(-1100)
-  const xMax = timeScale(1912)
+export function TimelineRail3D({ dynasties, regions }: Props) {
+  const regionMap = useMemo(
+    () => new Map(regions.map((r) => [r.dynastyId, r])),
+    [regions]
+  )
+
+  // Rail spans from first region left edge to last region right edge
+  const xMin = regions.length > 0 ? regions[0].xCenter - regions[0].xSpan / 2 : -380
+  const xMax = regions.length > 0
+    ? regions[regions.length - 1].xCenter + regions[regions.length - 1].xSpan / 2
+    : 380
 
   const railGeo = useMemo(() => buildRailRibbon(xMin, xMax), [xMin, xMax])
-  const majorTickGeo = useMemo(() => buildTickRibbon(TICK_HEIGHT), [])
-  const minorTickGeo = useMemo(() => buildTickRibbon(TICK_HEIGHT * 0.5), [])
-
-  const ticks = useMemo(() => {
-    const result: number[] = []
-    for (let year = -1000; year <= 1900; year += 100) {
-      result.push(year)
-    }
-    return result
-  }, [])
 
   return (
     <group position={[0, RAIL_Y, 0]}>
@@ -79,49 +60,17 @@ export function TimelineRail3D({ dynasties }: Props) {
         <meshBasicMaterial color="#4a4a6a" transparent opacity={0.5} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Century tick marks */}
-      {ticks.map((year) => {
-        const x = timeScale(year)
-        const isMajor = year % 500 === 0
-        return (
-          <group key={year} position={[x, 0, 0]}>
-            <mesh geometry={isMajor ? majorTickGeo : minorTickGeo}>
-              <meshBasicMaterial
-                color={isMajor ? '#6a6a7a' : '#3a3a4a'}
-                transparent
-                opacity={0.6}
-                side={THREE.DoubleSide}
-              />
-            </mesh>
-            {isMajor && (
-              <Billboard>
-                <Text
-                  position={[0, TICK_HEIGHT + 2, 0]}
-                  fontSize={2}
-                  color="#6a6a7a"
-                  anchorX="center"
-                  anchorY="bottom"
-                  fillOpacity={0.7}
-                >
-                  {year < 0 ? `${Math.abs(year)}BC` : `${year}`}
-                </Text>
-              </Billboard>
-            )}
-          </group>
-        )
-      })}
-
       {/* Dynasty span markers with stamp-style endpoints */}
       {dynasties.map((dynasty) => {
-        const x0 = timeScale(dynasty.startYear)
-        const x1 = timeScale(dynasty.endYear)
-        const xMid = (x0 + x1) / 2
-        const spanWidth = Math.abs(x1 - x0)
+        const region = regionMap.get(dynasty.id)
+        if (!region) return null
+        const x0 = region.xCenter - region.xSpan / 2
+        const spanWidth = region.xSpan
 
         return (
           <group key={dynasty.id}>
             {/* Dynasty color bar below rail */}
-            <mesh position={[xMid, -3, 0]}>
+            <mesh position={[region.xCenter, -3, 0]}>
               <planeGeometry args={[spanWidth, 2]} />
               <meshBasicMaterial color={dynasty.color} transparent opacity={0.25} />
             </mesh>
@@ -133,7 +82,7 @@ export function TimelineRail3D({ dynasties }: Props) {
             </mesh>
 
             {/* Dynasty name label */}
-            <Billboard position={[xMid, -12, 0]}>
+            <Billboard position={[region.xCenter, -12, 0]}>
               <Text
                 fontSize={2.5}
                 color={dynasty.color}

@@ -3,20 +3,17 @@ import { useFrame } from '@react-three/fiber'
 import { Billboard, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import type { Dynasty } from '../types/poem'
-import { build3DTimeScale } from '../lib/layout'
+import type { DynastyRegion3D } from '../lib/layout'
 import { inkNebulaVertex, inkNebulaFragment } from '../shaders/inkNebulaShader'
 
 interface Props {
   dynasties: Dynasty[]
+  regions: DynastyRegion3D[]
 }
 
-const timeScale = build3DTimeScale()
-
-function DynastyNebula({ dynasty }: { dynasty: Dynasty }) {
+function DynastyNebula({ dynasty, region }: { dynasty: Dynasty; region: DynastyRegion3D }) {
   const materialRef = useRef<THREE.ShaderMaterial>(null)
-  const xMid = (timeScale(dynasty.startYear) + timeScale(dynasty.endYear)) / 2
-  const xSpan = Math.abs(timeScale(dynasty.endYear) - timeScale(dynasty.startYear))
-  const size = Math.max(xSpan * 0.8, 40)
+  const size = region.nebulaSize
 
   useFrame(({ clock }) => {
     if (materialRef.current) {
@@ -27,7 +24,7 @@ function DynastyNebula({ dynasty }: { dynasty: Dynasty }) {
   const color = useMemo(() => new THREE.Color(dynasty.color), [dynasty.color])
 
   return (
-    <group position={[xMid, 0, 0]}>
+    <group position={[region.xCenter, 0, 0]}>
       <Billboard>
         <mesh>
           <planeGeometry args={[size, size * 0.8]} />
@@ -48,7 +45,7 @@ function DynastyNebula({ dynasty }: { dynasty: Dynasty }) {
       </Billboard>
       <Billboard>
         <Text
-          position={[0, 55, 0]}
+          position={[0, size * 0.5 + 10, 0]}
           fontSize={8}
           color={dynasty.color}
           anchorX="center"
@@ -63,12 +60,19 @@ function DynastyNebula({ dynasty }: { dynasty: Dynasty }) {
   )
 }
 
-export function DynastyNebulaField({ dynasties }: Props) {
+export function DynastyNebulaField({ dynasties, regions }: Props) {
+  const regionMap = useMemo(
+    () => new Map(regions.map((r) => [r.dynastyId, r])),
+    [regions]
+  )
+
   return (
     <group>
-      {dynasties.map((dynasty) => (
-        <DynastyNebula key={dynasty.id} dynasty={dynasty} />
-      ))}
+      {dynasties.map((dynasty) => {
+        const region = regionMap.get(dynasty.id)
+        if (!region) return null
+        return <DynastyNebula key={dynasty.id} dynasty={dynasty} region={region} />
+      })}
     </group>
   )
 }

@@ -23,6 +23,120 @@ export const WORLD3D = {
   PADDING: 20,
 } as const
 
+/** Nebula sizing range */
+const MIN_NEBULA = 25
+const MAX_NEBULA = 80
+
+export interface DynastyScore {
+  dynastyId: string
+  score: number
+  /** Normalized 0–1 relative to max score */
+  normalized: number
+  poemCount: number
+  authorCount: number
+}
+
+export interface DynastyRegion3D {
+  dynastyId: string
+  xCenter: number
+  xSpan: number
+  nebulaSize: number
+  score: DynastyScore
+}
+
+/**
+ * Compute dynasty importance scores using log2 compression.
+ * score = log2(poems + 1) * 0.6 + log2(authors + 1) * 0.4
+ */
+export function computeDynastyScores(
+  dynasties: Dynasty[],
+  authors: Author[],
+  poems: { authorId: string; dynastyId: string }[]
+): DynastyScore[] {
+  const poemsByDynasty = new Map<string, number>()
+  const authorsByDynasty = new Map<string, number>()
+
+  for (const p of poems) {
+    poemsByDynasty.set(p.dynastyId, (poemsByDynasty.get(p.dynastyId) ?? 0) + 1)
+  }
+  const authorDynasties = new Set<string>()
+  for (const a of authors) {
+    const key = `${a.dynastyId}:${a.id}`
+    if (!authorDynasties.has(key)) {
+      authorDynasties.add(key)
+      authorsByDynasty.set(a.dynastyId, (authorsByDynasty.get(a.dynastyId) ?? 0) + 1)
+    }
+  }
+
+  const raw = dynasties.map((d) => {
+    const pc = poemsByDynasty.get(d.id) ?? 0
+    const ac = authorsByDynasty.get(d.id) ?? 0
+    return {
+      dynastyId: d.id,
+      score: Math.log2(pc + 1) * 0.6 + Math.log2(ac + 1) * 0.4,
+      normalized: 0,
+      poemCount: pc,
+      authorCount: ac,
+    }
+  })
+
+  const maxScore = Math.max(...raw.map((r) => r.score), 1)
+  for (const r of raw) {
+    r.normalized = r.score / maxScore
+  }
+
+  return raw
+}
+
+/**
+ * Build weighted 3D dynasty regions.
+ * Dynasties keep chronological order but X-axis width is proportional to score,
+ * with a minimum width guarantee so small dynasties remain visible.
+ */
+export function buildWeightedRegions3D(
+  dynasties: Dynasty[],
+  scores: DynastyScore[]
+): DynastyRegion3D[] {
+  const totalWidth = WORLD3D.WIDTH - WORLD3D.PADDING * 2
+  const scoreMap = new Map(scores.map((s) => [s.dynastyId, s]))
+  const minWidth = 40
+  const gap = 12
+
+  // Sorted by chronological order (dynasties array is already sorted)
+  const sorted = dynasties.map((d) => ({
+    dynasty: d,
+    score: scoreMap.get(d.id)!,
+  }))
+
+  const totalGaps = gap * (sorted.length - 1)
+  const totalMinReserved = minWidth * sorted.length
+  const distributable = Math.max(0, totalWidth - totalGaps - totalMinReserved)
+  const totalScore = sorted.reduce((sum, s) => sum + s.score.score, 0)
+
+  const regions: DynastyRegion3D[] = []
+  let cursor = -(totalWidth / 2)
+
+  for (let i = 0; i < sorted.length; i++) {
+    const { score } = sorted[i]
+    const proportion = totalScore > 0 ? score.score / totalScore : 1 / sorted.length
+    const width = minWidth + distributable * proportion
+    const xCenter = cursor + width / 2
+    const nebulaSize = MIN_NEBULA + score.normalized * (MAX_NEBULA - MIN_NEBULA)
+
+    regions.push({
+      dynastyId: score.dynastyId,
+      xCenter,
+      xSpan: width,
+      nebulaSize,
+      score,
+    })
+
+    cursor += width + gap
+  }
+
+  return regions
+}
+
 /** Spiral distribution tuning constants */
 export const SPIRAL = {
   /** Spiral radius = sqrt(n) * RADIUS_FACTOR */
@@ -147,17 +261,20 @@ export function layoutAuthors(
 
 /**
  * Position authors in 3D space using a golden-angle spiral per dynasty group.
- * X = birth year on timeline + deterministic jitter, Y/Z = spiral distribution.
+ * Authors are placed within their dynasty's weighted X region.
+ * Spiral radius scales with dynasty score for proportional spread.
  */
 export function layoutAuthors3D(
   authors: Author[],
   poems: { authorId: string }[],
-  timeScale: ReturnType<typeof build3DTimeScale>
+  regions: DynastyRegion3D[]
 ): AuthorNode[] {
   const poemCounts = new Map<string, number>()
   for (const p of poems) {
     poemCounts.set(p.authorId, (poemCounts.get(p.authorId) ?? 0) + 1)
   }
+
+  const regionMap = new Map(regions.map((r) => [r.dynastyId, r]))
 
   const byDynasty = new Map<string, Author[]>()
   for (const a of authors) {
@@ -169,10 +286,15 @@ export function layoutAuthors3D(
   const nodes: AuthorNode[] = []
 
   for (const [dynastyId, group] of byDynasty) {
+    const region = regionMap.get(dynastyId)
+    if (!region) continue
+
     group.sort((a, b) => (a.birth_year ?? 0) - (b.birth_year ?? 0))
 
     const n = group.length
-    const spiralRadius = Math.sqrt(n) * SPIRAL.RADIUS_FACTOR
+    // Scale spiral radius with dynasty score — larger dynasties spread more
+    const baseRadius = Math.sqrt(n) * SPIRAL.RADIUS_FACTOR
+    const spiralRadius = baseRadius * (0.6 + region.score.normalized * 0.4)
 
     group.forEach((author, i) => {
       const count = poemCounts.get(author.id) ?? 0
@@ -193,7 +315,10 @@ export function layoutAuthors3D(
 
       const z = styleZ + zSpiral
 
-      // Deterministic X jitter to reduce birth_year overlap
+      // Spread authors within dynasty's X region based on birth year order
+      const xOffset = n === 1
+        ? 0
+        : ((i / (n - 1)) - 0.5) * region.xSpan * 0.6
       const xJitter = ((i % 5) - 2) * SPIRAL.X_JITTER_SCALE
 
       nodes.push({
@@ -203,7 +328,7 @@ export function layoutAuthors3D(
         author,
         dynastyId,
         color: getDynastyColor(dynastyId),
-        x: timeScale(author.birth_year ?? 0) + xJitter,
+        x: region.xCenter + xOffset + xJitter,
         y: yOffset,
         z,
         poemCount: count,

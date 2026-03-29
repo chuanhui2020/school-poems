@@ -11,9 +11,10 @@ import poems from './data/poems.json'
 import dynasties from './data/dynasties.json'
 import type { Author, Poem, Dynasty } from './types/poem'
 import { getDynastyColor } from './lib/colorScales'
-import { layoutAuthors3D, build3DTimeScale } from './lib/layout'
+import { layoutAuthors3D, computeDynastyScores, buildWeightedRegions3D } from './lib/layout'
 
-const timeScale = build3DTimeScale()
+const dynastyScores = computeDynastyScores(dynasties as Dynasty[], authors as Author[], poems as Poem[])
+const dynastyRegions = buildWeightedRegions3D(dynasties as Dynasty[], dynastyScores)
 
 /** Fallback when WebGL is unavailable */
 function WebGLFallback() {
@@ -45,7 +46,7 @@ export default function App() {
 
   // Build node position map for search fly-to
   const nodePositionMap = useMemo(() => {
-    const nodes = layoutAuthors3D(authors as Author[], poems as Poem[], timeScale)
+    const nodes = layoutAuthors3D(authors as Author[], poems as Poem[], dynastyRegions)
     return new Map(nodes.map((n) => [n.id, [n.x, n.y, n.z] as [number, number, number]]))
   }, [])
 

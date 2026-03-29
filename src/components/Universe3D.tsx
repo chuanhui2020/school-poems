@@ -4,7 +4,7 @@ import { EffectComposer, Bloom, ToneMapping, Vignette } from '@react-three/postp
 import { ToneMappingMode } from 'postprocessing'
 import * as THREE from 'three'
 import { useStore } from '../store/useStore'
-import { layoutAuthors3D, build3DTimeScale } from '../lib/layout'
+import { layoutAuthors3D, computeDynastyScores, buildWeightedRegions3D } from '../lib/layout'
 import type { AuthorNode, PoemNode, RelationshipEdge } from '../types/nodes'
 import type { Author, Poem, Dynasty } from '../types/poem'
 import authorsData from '../data/authors.json'
@@ -32,7 +32,8 @@ const EDGE_COLORS: Record<string, string> = {
   contemporary: '#aaaaaa',
 }
 
-const timeScale = build3DTimeScale()
+const dynastyScores = computeDynastyScores(dynasties, authors, poems)
+const dynastyRegions = buildWeightedRegions3D(dynasties, dynastyScores)
 
 function buildPoemNodes(authorNodes: AuthorNode[]): PoemNode[] {
   const nodeMap = new Map(authorNodes.map((n) => [n.id, n]))
@@ -74,7 +75,7 @@ function Scene() {
   const selectedDynasties = useStore((s) => s.selectedDynasties)
   const zoomLevel = useStore((s) => s.zoomLevel)
 
-  const authorNodes = useMemo(() => layoutAuthors3D(authors, poems, timeScale), [])
+  const authorNodes = useMemo(() => layoutAuthors3D(authors, poems, dynastyRegions), [])
   const poemNodes = useMemo(() => buildPoemNodes(authorNodes), [authorNodes])
   const edges = useMemo(() => buildEdges(authorNodes), [authorNodes])
   const nodeMap = useMemo(() => new Map(authorNodes.map((n) => [n.id, n])), [authorNodes])
@@ -102,8 +103,8 @@ function Scene() {
 
       <CameraController />
       <InkBackground />
-      <TimelineRail3D dynasties={dynasties} />
-      <DynastyNebulaField dynasties={dynasties} />
+      <TimelineRail3D dynasties={dynasties} regions={dynastyRegions} />
+      <DynastyNebulaField dynasties={dynasties} regions={dynastyRegions} />
 
       {edges.map((edge, i) => {
         const src = nodeMap.get(edge.source)
