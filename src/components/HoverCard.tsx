@@ -45,8 +45,8 @@ export function HoverCard() {
         }}
       >
         <p
-          className="text-base font-medium"
-          style={{ color: '#e0dcd0', fontFamily: "'LXGW WenKai', serif" }}
+          className="text-base font-medium font-serif"
+          style={{ color: 'var(--color-text)' }}
         >
           {author.name}
         </p>

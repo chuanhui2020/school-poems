@@ -1,4 +1,4 @@
-import { useMemo, Component, type ReactNode } from 'react'
+import { useMemo, Component, type ReactNode, Suspense } from 'react'
 import { useStore } from './store/useStore'
 import { Universe3D } from './components/Universe3D'
 import { HUD } from './components/HUD'
@@ -15,6 +15,22 @@ import { layoutAuthors3D, computeDynastyScores, buildWeightedRegions3D } from '.
 
 const dynastyScores = computeDynastyScores(dynasties as Dynasty[], authors as Author[], poems as Poem[])
 const dynastyRegions = buildWeightedRegions3D(dynasties as Dynasty[], dynastyScores)
+
+/** Loading shimmer while WebGL initializes */
+function CanvasLoader() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-deep)]">
+      <div className="text-center animate-breathe">
+        <p className="font-serif text-lg" style={{ color: 'var(--color-text-dim)' }}>
+          古诗词网络
+        </p>
+        <p className="text-xs mt-2" style={{ color: 'var(--color-text-secondary)' }}>
+          正在加载星图...
+        </p>
+      </div>
+    </div>
+  )
+}
 
 /** Fallback when WebGL is unavailable */
 function WebGLFallback() {
@@ -80,7 +96,9 @@ export default function App() {
   return (
     <div className="w-screen h-screen relative overflow-hidden bg-[var(--color-bg-deep)]">
       <WebGLErrorBoundary>
-        <Universe3D />
+        <Suspense fallback={<CanvasLoader />}>
+          <Universe3D />
+        </Suspense>
       </WebGLErrorBoundary>
       <HUD />
       <SearchOverlay

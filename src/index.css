@@ -6,7 +6,8 @@
   --color-bg-card: #2d2d44;
   --color-bg-panel: rgba(10, 10, 15, 0.92);
   --color-text: #e0dcd0;
-  --color-text-dim: #8a8a9a;
+  --color-text-dim: #a0a0b0;
+  --color-text-secondary: #9a9aaa;
   --color-text-bright: #f0ece0;
   --color-accent: #6cc8d8;
   --color-accent-dim: rgba(108, 200, 216, 0.3);
@@ -19,6 +20,7 @@
   --color-glow: rgba(0, 229, 255, 0.4);
 
   --font-family-sans: "Inter", "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+  --font-family-serif: "LXGW WenKai", "Noto Serif SC", "STSong", serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,7 +33,7 @@ body {
   overflow: hidden;
 }
 
-#root { width: 100vw; height: 100vh; position: relative; z-index: 2; }
+#root { width: 100vw; height: 100dvh; position: relative; z-index: 2; }
 
 /* Ink wash vignette — replaces starfield */
 body::after {
@@ -54,7 +56,7 @@ body::after {
   color: var(--color-cinnabar);
   background: transparent;
   padding: 0.25rem 0.75rem;
-  font-family: 'LXGW WenKai', serif;
+  font-family: var(--font-family-serif);
   cursor: pointer;
   transition: box-shadow 0.3s ease;
   border-radius: 2px;
@@ -114,3 +116,55 @@ body::after {
 .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
 .animate-ink-spread { animation: inkSpread 0.5s ease-out forwards; }
 .animate-breathe { animation: breathe 4s ease-in-out infinite; }
+
+/* Exit animations */
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.animate-slide-out { animation: slideOutRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-out { animation: fadeOut 0.25s ease-in forwards; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in,
+  .animate-slide-out,
+  .animate-fade-in,
+  .animate-fade-out,
+  .animate-ink-spread,
+  .animate-breathe {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Font utility */
+.font-serif {
+  font-family: var(--font-family-serif);
+}
+
+/* Mobile: switch vertical text to horizontal for readability */
+@media (max-width: 767px) {
+  .poem-text-vertical {
+    writing-mode: horizontal-tb !important;
+    max-height: none !important;
+    overflow-x: visible !important;
+    font-size: 16px !important;
+    line-height: 2 !important;
+    white-space: pre-line;
+  }
+}
